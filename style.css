@@ -1,0 +1,88 @@
+*{
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #f5f5f5;
+    max-width: 100%;
+}
+
+h1{
+    margin-top: 30px;
+    margin-bottom: 50px;
+    text-align: center;
+}
+
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    flex-direction: column;
+    background-color: #2e2e2e;
+}
+
+#tabuleiro{
+    display: grid;
+    grid-template-columns: repeat(8,80px);
+    grid-template-rows: repeat(8,80px);
+    user-select: none;
+}
+
+.casas{
+    border-radius: 2px;
+    background-color: #b58863;
+    height: 80px;
+    width: 80px;
+    transition: background-color 0.5 ease;
+    user-select: none;
+    cursor: default;
+}
+
+.casas-claras{
+    border-radius: 2px;
+    background-color: #f0d9b5;
+    height: 80px;
+    width: 80px;
+    transition: background-color 0.5s ease;
+    user-select: none;
+}
+
+.peca-preta{
+    display: flex;
+    font-size: 60px;
+    color: #3c2f23;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.5s ease;
+    user-select: none;
+}
+
+.peca-branca{
+    display: flex;
+    font-size: 60px;
+    color: #f0d9b5;
+    text-shadow: 2px 2px 1px #3c2f23;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.5s ease;
+    user-select: none;
+}
+
+
+.casas:hover {
+    background-color: rgba(255, 255, 255, 0.2); 
+  }
+.casas-claras:hover{
+    background-color: rgba(255, 255, 255, 0.2); 
+  }
+
+.selecionada {
+    background-color: rgba(188, 188, 188);
+    transition: background-color 0.5s ease;
+    z-index: 1;
+}
+
+
+
