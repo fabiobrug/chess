@@ -21,6 +21,7 @@ let selectC;
 // Indica se uma peça foi selecionada (true) ou não (false)
 let selecionada = false;
 
+let moveu = false;
 
 // ---------------------- //
 // SELEÇÃO DE PEÇAS
@@ -32,6 +33,7 @@ pecaSelect = document.querySelectorAll(".peca-branca, .peca-preta");
 // Para cada peça, adiciona um ouvinte de clique
 pecaSelect.forEach((peca) => {
   peca.addEventListener("click", (event) => {
+    event.stopPropagation();
     
     // Se a peça já está selecionada e for clicada novamente:
     if (peca.classList.contains('selecionada')) {
@@ -80,6 +82,7 @@ casaSelect.forEach((casa) => {
 
     // Chama a função de movimentação (ainda será implementada)
     casaMove();
+
   });
 });
 
@@ -100,12 +103,17 @@ casaMove = () => {
 
   // Se ambos existem, move a peça para dentro da casa
   if(peca && casa){
-    casa.appendChild(peca); // move a peça visualmente para dentro da casa
-    console.log(`Peca ${selectP} na casa ${selectC}`)
-    console.log(tabuleiroEstado)
-    
-  }
+    peca.parentNode.removeChild(peca);
 
+    casa.appendChild(peca); // move a peça visualmente para dentro da casa
+
+    console.log(`Peca ${selectP} na casa ${selectC}`)
+
+    peca.classList.remove('selecionada'); // Remove visual selection
+    selecionada = false;   // No piece is selected now
+    selectP = null;        // Clear selected piece ID
+    selectC = null;    // Clear selected position
+  }
 
   // - Atualizar o estado do tabuleiro
   // - Verificar se há captura de peça

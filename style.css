@@ -83,6 +83,12 @@ body{
     transition: background-color 0.5s ease;
     z-index: 1;
 }
+.selecionada2 {
+    background-color: rgba(188, 188, 188);
+    transition: background-color 0.5s ease;
+    z-index: 1;
+}
+
 
 
 
