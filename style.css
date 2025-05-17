@@ -134,10 +134,26 @@ body{
     border-color: #ffddaa;
   }
 
+  .tempo{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.5s ease;
+    color: #f0f0f0;
+    height: 100px;
+    width: 200px;
+    font-size: 40px;
+    border-radius: 10px;
+    background-color: #302d1f;
+    border: 2px solid #5f5545; 
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+  }
+
 .container{
     display: flex;
     margin: 30px;
-    gap: 240px;
+    gap: 20px;
   }
 
 

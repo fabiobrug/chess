@@ -117,3 +117,37 @@ casaMove = () => {
   // - Verificar se há captura de peça
   // - Etc.
 };
+
+// ---------------------- //
+// INICIO DO JOGO
+// ---------------------- //
+
+let botaoStart = document.getElementById('btn-start')
+
+  botaoStart.addEventListener('click', () =>{
+    botaoStart.style.backgroundColor = ' #c62828'
+    botaoStart.style.borderColor = ' git#ef5350'
+    botaoStart.disabled = true;
+    let tempo = 300;
+    const timerElement = document.getElementById('temporizador')
+
+
+    const intervalo = setInterval(() => {
+      tempo--;
+      const minutos = Math.floor(tempo / 60);
+      const segundos = tempo % 60;
+      const tempoFormatado = `${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
+  
+      timerElement.innerHTML = `<h3>${tempoFormatado}</h3>`;
+      timerElement.style.backgroundColor = ' #5f5545'
+    
+      if(tempo <= 0){
+        clearInterval(intervalo);
+        timerElement.innerHTML = `<h3>Fim de Jogo</h3>`
+      }
+
+    }, 1000)
+  })
+
+
+
