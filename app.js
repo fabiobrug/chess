@@ -126,7 +126,7 @@ let botaoStart = document.getElementById('btn-start')
 
   botaoStart.addEventListener('click', () =>{
     botaoStart.style.backgroundColor = ' #c62828'
-    botaoStart.style.borderColor = ' git#ef5350'
+    botaoStart.style.borderColor = ' #ef5350'
     botaoStart.disabled = true;
     let tempo = 300;
     const timerElement = document.getElementById('temporizador')
