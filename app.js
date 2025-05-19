@@ -124,6 +124,8 @@ casaMove = () => {
   // - Etc.
 };
 
+
+
 // ---------------------- //
 // INICIO DO JOGO E FUNCAO DE REINICIAR
 // ---------------------- //
@@ -142,7 +144,7 @@ restart();
 
 // Evento de clique do botão "Start"
 botaoStart.addEventListener("click", () => {
-
+  
   somStart.play()
   // Altera a cor do botão para vermelho escuro e borda vermelha clara
   botaoStart.style.backgroundColor = "#c62828";
@@ -191,8 +193,8 @@ botaoStart.addEventListener("click", () => {
         timerElement.innerHTML = `<h3>Fim de Jogo</h3>`;
       }
     }, 1000); // Executa a cada 1 segundo (1000 ms)
-  }
-});
+  }}
+);
 
 // Função que adiciona o comportamento ao botão de reinício
 function restart() {
