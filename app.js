@@ -49,7 +49,8 @@ pecaSelect.forEach((peca) => {
   // Adiciona evento de clique
   peca.addEventListener("click", (event) => {
     // Se o jogo não começou, ignora o clique
-    if (!start) return;
+    if (!start) { alert("Comece o jogo!")
+      return;}
 
     event.stopPropagation(); // Evita propagação do clique para elementos pais
 
