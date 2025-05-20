@@ -1,6 +1,28 @@
 // ---------------------- //
 // ESTADOS DO TABULEIRO
 // ---------------------- //
+const tabuleiro = [
+  ["rB", "nB", "bB", "qB", "kB", "bB", "nB", "rB"],
+  ["pB", "pB", "pB", "pB", "pB", "pB", "pB", "pB"],
+  ["",   "",   "",   "",   "",   "",   "",   "" ],
+  ["",   "",   "",   "",   "",   "",   "",   "" ],
+  ["",   "",   "",   "",   "",   "",   "",   "" ],
+  ["",   "",   "",   "",   "",   "",   "",   "" ],
+  ["pW", "pW", "pW", "pW", "pW", "pW", "pW", "pW"],
+  ["rW", "nW", "bW", "qW", "kW", "bW", "nW", "rW"]
+];
+
+/*
+-r : rook
+-n : nkight
+-b : bishop
+-q : queen
+-k : king
+-p : pawn
+
+-B : Black
+-W : White
+*/
 
 // ---------------------- //
 // SONS
@@ -107,9 +129,11 @@ casaMove = () => {
 
   // Se ambas existem, faz a movimentação
   if (peca && casa) {
+     atualizarEstadoTabuleiro(peca.parentNode.getAttribute("data-pos"), selectC);
     peca.parentNode.removeChild(peca); // Remove a peça da casa atual
     somMove.play(); // Toca som de movimento
     casa.appendChild(peca); // Adiciona a peça na nova casa
+    
 
     // Limpa estados e seleção
     peca.classList.remove("selecionada");
@@ -118,7 +142,15 @@ casaMove = () => {
     selectC = null;
   }
 
-  
+};
+
+const atualizarEstadoTabuleiro = (origem, destino) => {
+  const [linhaO, colO] = origem.split(",").map(Number);
+  const [linhaD, colD] = destino.split(",").map(Number);
+
+  tabuleiro[linhaD][colD] = tabuleiro[linhaO][colO]; // Move peça na matriz
+  tabuleiro[linhaO][colO] = ""; // Limpa posição anterior
+  console.log(tabuleiro)
 };
 
 // ---------------------- //
@@ -210,3 +242,5 @@ function restart() {
     botaoStart.style.borderColor = "";
   });
 }
+
+
