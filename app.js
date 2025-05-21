@@ -65,6 +65,8 @@ let selecionada = false;
 // Booleano para controlar se o jogo está ativo
 let start = false;
 
+let turno = 0;
+
 // ---------------------- //
 // SELEÇÃO DE PEÇAS
 // ---------------------- //
@@ -95,13 +97,26 @@ pecaSelect.forEach((peca) => {
       return;
     }
 
-    // Remove qualquer seleção anterior
-    pecaSelect.forEach((c) => c.classList.remove("selecionada"));
+    const cor = peca.classList.contains("peca-branca") ? "branca" : "preta";
+    
 
-    // Seleciona a nova peça clicada
-    peca.classList.add("selecionada");
-    selecionada = true;
-    selectP = peca.id; // Armazena ID da peça selecionada
+    // Remove qualquer seleção anterior
+    if(cor == "branca" && turno%2 == 0){
+      pecaSelect.forEach((c) => c.classList.remove("selecionada"));
+      peca.classList.add("selecionada");
+      selecionada = true;
+      selectP = peca.id; 
+      turno++;
+    }
+     if(cor == "preta" && turno%2 != 0){
+      pecaSelect.forEach((c) => c.classList.remove("selecionada"));
+      peca.classList.add("selecionada");
+      selecionada = true;
+      selectP = peca.id; 
+      turno++;
+    }
+    
+
   });
 });
 
@@ -123,7 +138,7 @@ casaSelect.forEach((casa) => {
 
     // Armazena a posição clicada
     selectC = casa.dataset.pos;
-
+    
     // Tenta mover a peça
     casaMove();
   });
@@ -165,8 +180,36 @@ function movimentoPeao(origem, destino, cor) {
 
   // Movimento de captura na diagonal
   const capturarDiagonal = linhaD === linhaO + direcao && Math.abs(colD - colO) === 1 && destinoPeca !== "" && destinoPeca[1] !== cor[0];
+  if(capturarDiagonal){
+    let peca = document.querySelector(`[data-pos="${selectC}"]`);
+    let pecaCapturada = peca.querySelector('p');
+    pecaCapturada.remove()
+  }
 
   return avancarUma || avancarDuas || capturarDiagonal; // Retorna verdadeiro se qualquer um for válido
+}
+
+// Verifica se o movimento do peão é válido
+function movimentoCavalo(origem, destino, cor) {
+  const [linhaO, colO] = origem.split(",").map(Number); // Origem
+  const [linhaD, colD] = destino.split(",").map(Number); // Destino
+
+  const direcao = [
+  [-2, -1], [-2, 1], [-1, -2], [-1, 2],
+  [1, -2], [1, 2], [2, -1], [2, 1]
+];
+
+  const destinoPeca = tabuleiro[linhaD][colD]; // Verifica se há peça no destino
+
+  // Movimento
+  const avancar = direcao.some(([dx,dy]) => 
+  linhaD === linhaO + dx && colD == colO + dy);
+
+  const destinoValido = destinoPeca === "";
+
+  const podeMover = avancar && destinoValido;
+
+  return podeMover;
 }
 
 // ---------------------- //
@@ -189,7 +232,12 @@ const casaMove = () => {
     // Verifica se o movimento do peão é válido
     if (tipo === "peao") {
       podeMover = movimentoPeao(origem, destino, cor);
-    } else {
+    } 
+    // Verifica se o movimento do cavalo é válido
+    else if (tipo == "cavalo"){
+      podeMover = movimentoCavalo(origem, destino, cor);
+    }
+    else {
       // Outras peças ainda não implementadas (por padrão, permite)
       podeMover = true;
     }
