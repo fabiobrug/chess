@@ -104,6 +104,23 @@ body{
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
 }
 
+.btn-goChange{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.5s ease;
+    color: #f0f0f0;
+    height: 130px;
+    width: 230px;
+    font-size: 40px;
+    border-radius: 10px;
+    background-color: #4cee54;
+    border: 2px solid #bafdbd; 
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+    z-index: 1;
+}
+
 .btn-go:hover {
     background-color: #4caf50;  
     color: #ffffff;
@@ -126,6 +143,7 @@ body{
     border: 2px solid #ffb74d; 
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
 }
+
 
 .btn-back:hover {
     background-color: #ffa726;  

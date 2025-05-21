@@ -1,96 +1,107 @@
 // ---------------------- //
 // ESTADOS DO TABULEIRO
 // ---------------------- //
+
+// Estado inicial do tabuleiro, representado como uma matriz 8x8
 const tabuleiro = [
-  ["rB", "nB", "bB", "qB", "kB", "bB", "nB", "rB"],
-  ["pB", "pB", "pB", "pB", "pB", "pB", "pB", "pB"],
-  ["",   "",   "",   "",   "",   "",   "",   "" ],
-  ["",   "",   "",   "",   "",   "",   "",   "" ],
-  ["",   "",   "",   "",   "",   "",   "",   "" ],
-  ["",   "",   "",   "",   "",   "",   "",   "" ],
-  ["pW", "pW", "pW", "pW", "pW", "pW", "pW", "pW"],
-  ["rW", "nW", "bW", "qW", "kW", "bW", "nW", "rW"]
+  ["rB", "nB", "bB", "qB", "kB", "bB", "nB", "rB"], // Linha 0: peças pretas principais
+  ["pB", "pB", "pB", "pB", "pB", "pB", "pB", "pB"], // Linha 1: peões pretos
+  ["",   "",   "",   "",   "",   "",   "",   "" ], // Linha 2: casas vazias
+  ["",   "",   "",   "",   "",   "",   "",   "" ], // Linha 3: casas vazias
+  ["",   "",   "",   "",   "",   "",   "",   "" ], // Linha 4: casas vazias
+  ["",   "",   "",   "",   "",   "",   "",   "" ], // Linha 5: casas vazias
+  ["pW", "pW", "pW", "pW", "pW", "pW", "pW", "pW"], // Linha 6: peões brancos
+  ["rW", "nW", "bW", "qW", "kW", "bW", "nW", "rW"]  // Linha 7: peças brancas principais
 ];
+console.log(tabuleiro); // Exibe o estado inicial do tabuleiro no console
 
 /*
--r : rook
--n : nkight
--b : bishop
--q : queen
--k : king
--p : pawn
+-r : rook (torre)
+-n : knight (cavalo)
+-b : bishop (bispo)
+-q : queen (rainha)
+-k : king (rei)
+-p : pawn (peão)
 
--B : Black
--W : White
+-B : Black (preto)
+-W : White (branco)
 */
 
 // ---------------------- //
 // SONS
 // ---------------------- //
 
-// Cria objeto de áudio para som de movimento da peça
+// Cria objeto de áudio para som ao mover uma peça
 let somMove = new Audio("sounds/move-self.mp3");
 
-// Cria objeto de áudio para som de clique ao iniciar ou reiniciar
+// Cria objeto de áudio para som ao clicar em iniciar ou reiniciar
 let somStart = new Audio("sounds/mouse-click-sound-233951.mp3");
+
+// Cria objeto de áudio para som de erro
+let somErro = new Audio("sounds/error-10-206498.mp3");
 
 // ---------------------- //
 // ESTADOS DO JOGO
 // ---------------------- //
 
-// Armazena todas as peças (brancas e pretas)
+// Variável para armazenar peças selecionadas
 let pecaSelect = null;
 
-// Armazena todas as casas clicáveis do tabuleiro (com atributo data-pos)
+// Variável para armazenar casas clicáveis com atributo data-pos
 let casaSelect = null;
 
-// Pode ser usada para guardar a cor padrão da casa ou peça (não usada por enquanto)
+// Pode ser usada para cor de fundo padrão, mas não está sendo utilizada
 let corPadrao;
 
-// Armazena o ID da peça selecionada
+// ID da peça selecionada
 let selectP;
 
-// Armazena a posição da casa clicada
+// Posição da casa clicada
 let selectC;
 
-// Indica se há uma peça atualmente selecionada
+// Booleano indicando se há uma peça atualmente selecionada
 let selecionada = false;
 
-// Controla se o jogo está ativo (true = iniciado, false = parado)
+// Booleano para controlar se o jogo está ativo
 let start = false;
 
 // ---------------------- //
 // SELEÇÃO DE PEÇAS
 // ---------------------- //
 
-// Seleciona todas as peças do tabuleiro (brancas e pretas)
+// Seleciona todas as peças do tabuleiro (classes de brancas e pretas)
 pecaSelect = document.querySelectorAll(".peca-branca, .peca-preta");
 
-// Para cada peça encontrada...
+// Para cada peça encontrada, adiciona um evento de clique
 pecaSelect.forEach((peca) => {
-  // Adiciona evento de clique
   peca.addEventListener("click", (event) => {
-    // Se o jogo não começou, ignora o clique
-    if (!start) { alert("Comece o jogo!")
+    // Se o jogo não começou, exibe alerta e ignora o clique
+    if (!start) { 
+      somErro.play(); 
+      botaoStart.classList.add("btn-goChange")
+      setTimeout(() => {
+        botaoStart.classList.remove("btn-goChange")
+        botaoStart.classList.add("btn-go")
+      },500)
       return;}
 
-    event.stopPropagation(); // Evita propagação do clique para elementos pais
+    event.stopPropagation(); // Evita que o clique afete elementos pai
 
-    // Se a peça clicada já estava selecionada...
+    // Se a peça clicada já está selecionada, desmarca
     if (peca.classList.contains("selecionada")) {
       selecionada = false;
       selectP = null;
-      peca.classList.remove("selecionada"); // Desmarca visualmente
+      peca.classList.remove("selecionada");
       return;
     }
 
-    // Remove seleção de qualquer outra peça
+    // Remove qualquer seleção anterior
     pecaSelect.forEach((c) => c.classList.remove("selecionada"));
 
     // Seleciona a nova peça clicada
     peca.classList.add("selecionada");
     selecionada = true;
-    selectP = peca.id; // Salva o ID da peça para usar depois no movimento
+    selectP = peca.id; // Armazena ID da peça selecionada
   });
 });
 
@@ -98,66 +109,114 @@ pecaSelect.forEach((peca) => {
 // SELEÇÃO DE CASAS
 // ---------------------- //
 
-// Seleciona todas as casas do tabuleiro com o atributo `data-pos`
+// Seleciona todas as casas com atributo `data-pos`
 casaSelect = document.querySelectorAll("[data-pos]");
 
-// Para cada casa...
+// Para cada casa, adiciona evento de clique
 casaSelect.forEach((casa) => {
   casa.addEventListener("click", (event) => {
-    // Se o jogo não estiver ativo, ignora
+    // Ignora se o jogo não estiver ativo
     if (!start) return;
 
-    // Só permite clicar se uma peça estiver selecionada
+    // Ignora se nenhuma peça foi selecionada
     if (!selecionada) return;
 
-    // Pega a posição clicada (ex: "e4")
+    // Armazena a posição clicada
     selectC = casa.dataset.pos;
 
-    // Chama a função para mover a peça
+    // Tenta mover a peça
     casaMove();
   });
 });
 
 // ---------------------- //
-// FUNÇÃO DE MOVIMENTAÇÃO
+// FUNÇÃO: ATUALIZA ESTADO DO TABULEIRO
 // ---------------------- //
 
-// Move a peça selecionada para a casa clicada
-casaMove = () => {
-  let peca = document.getElementById(selectP); // Obtém a peça selecionada
-  let casa = document.querySelector(`[data-pos="${selectC}"]`); // Obtém a casa alvo
+// Atualiza a matriz do tabuleiro com a nova posição da peça
+function atualizarEstadoTabuleiro(origem, destino) {
+  const [linhaO, colO] = origem.split(",").map(Number); // Origem em formato [linha, coluna]
+  const [linhaD, colD] = destino.split(",").map(Number); // Destino em formato [linha, coluna]
 
-  // Se ambas existem, faz a movimentação
+  tabuleiro[linhaD][colD] = tabuleiro[linhaO][colO]; // Move a peça
+  tabuleiro[linhaO][colO] = ""; // Limpa a posição antiga
+  console.log(tabuleiro); // Mostra tabuleiro atualizado no console
+}
+
+// ---------------------- //
+// FUNÇÃO: VERIFICA MOVIMENTO DO PEAO
+// ---------------------- //
+
+// Verifica se o movimento do peão é válido
+function movimentoPeao(origem, destino, cor) {
+  const [linhaO, colO] = origem.split(",").map(Number); // Origem
+  const [linhaD, colD] = destino.split(",").map(Number); // Destino
+
+  const direcao = cor === "branca" ? -1 : 1; // Direção do movimento (branca sobe, preta desce)
+  const linhaInicial = cor === "branca" ? 6 : 1; // Linha inicial para peões
+
+  const destinoPeca = tabuleiro[linhaD][colD]; // Verifica se há peça no destino
+
+  // Movimento de 1 casa para frente sem capturar
+  const avancarUma = linhaD === linhaO + direcao && colD === colO && destinoPeca === "";
+
+  // Movimento de 2 casas a partir da posição inicial
+  const avancarDuas = linhaO === linhaInicial && linhaD === linhaO + 2 * direcao && colD === colO && tabuleiro[linhaO + direcao][colO] === "" && destinoPeca === "";
+
+  // Movimento de captura na diagonal
+  const capturarDiagonal = linhaD === linhaO + direcao && Math.abs(colD - colO) === 1 && destinoPeca !== "" && destinoPeca[1] !== cor[0];
+
+  return avancarUma || avancarDuas || capturarDiagonal; // Retorna verdadeiro se qualquer um for válido
+}
+
+// ---------------------- //
+// FUNÇÃO: MOVIMENTAR PEÇA
+// ---------------------- //
+
+// Função que move a peça no DOM e atualiza os estados
+const casaMove = () => {
+  let peca = document.getElementById(selectP); // Obtém elemento da peça
+  let casa = document.querySelector(`[data-pos="${selectC}"]`); // Obtém a casa destino
+
   if (peca && casa) {
-     atualizarEstadoTabuleiro(peca.parentNode.getAttribute("data-pos"), selectC);
-    peca.parentNode.removeChild(peca); // Remove a peça da casa atual
-    somMove.play(); // Toca som de movimento
-    casa.appendChild(peca); // Adiciona a peça na nova casa
-    
+    const origem = peca.parentNode.getAttribute("data-pos"); // Posição de origem
+    const destino = selectC; // Posição de destino
+    const tipo = peca.id.split("-")[0]; // Tipo da peça (ex: "peao")
+    const cor = peca.classList.contains("peca-branca") ? "branca" : "preta"; // Cor da peça
 
-    // Limpa estados e seleção
-    peca.classList.remove("selecionada");
+    let podeMover = false;
+
+    // Verifica se o movimento do peão é válido
+    if (tipo === "peao") {
+      podeMover = movimentoPeao(origem, destino, cor);
+    } else {
+      // Outras peças ainda não implementadas (por padrão, permite)
+      podeMover = true;
+    }
+
+    // Se o movimento não for válido, exibe mensagem e para
+    if (!podeMover) {
+      console.log("Movimento inválido para peão.");
+      return;
+    }
+
+    atualizarEstadoTabuleiro(origem, destino); // Atualiza o tabuleiro
+    peca.parentNode.removeChild(peca); // Remove peça da casa atual
+    somMove.play(); // Toca som de movimento
+    casa.appendChild(peca); // Adiciona peça na nova casa
+
+    peca.classList.remove("selecionada"); // Remove marcação de selecionada
     selecionada = false;
     selectP = null;
     selectC = null;
   }
-
-};
-
-const atualizarEstadoTabuleiro = (origem, destino) => {
-  const [linhaO, colO] = origem.split(",").map(Number);
-  const [linhaD, colD] = destino.split(",").map(Number);
-
-  tabuleiro[linhaD][colD] = tabuleiro[linhaO][colO]; // Move peça na matriz
-  tabuleiro[linhaO][colO] = ""; // Limpa posição anterior
-  console.log(tabuleiro)
 };
 
 // ---------------------- //
 // FUNÇÃO DE INICIAR JOGO
 // ---------------------- //
 
-// Apenas marca a flag de jogo como verdadeiro
+// Marca a flag de início do jogo como verdadeira
 function startGame() {
   start = true;
 }
@@ -169,32 +228,32 @@ function startGame() {
 // Controla se o temporizador está ativo
 let ativo = true;
 
-// Armazena o intervalo de tempo da contagem
+// Armazena o intervalo do temporizador
 let intervalo = null;
 
-// Seleciona os botões pela ID
+// Obtém os botões de iniciar e reiniciar pelo ID
 let botaoStart = document.getElementById("btn-start");
 let botaoRestart = document.getElementById("btn-restart");
 
-// Inicializa o evento do botão de reiniciar
+// Inicializa o botão de reinício
 restart();
 
-// Evento de clique no botão "Start"
+// Evento de clique no botão de iniciar
 botaoStart.addEventListener("click", () => {
   start = true;
-  startGame(); // Ativa flag de jogo
+  startGame(); // Marca como jogo ativo
   somStart.play(); // Som de clique ao iniciar
 
-  // Estiliza o botão como ativo
+  // Muda estilo do botão para mostrar que está ativo
   botaoStart.style.backgroundColor = "#c62828";
   botaoStart.style.borderColor = "#ef5350";
-  botaoStart.disabled = true; // Evita clicar mais de uma vez
+  botaoStart.disabled = true; // Impede múltiplos cliques
 
   let tempo = 300; // Tempo em segundos (5 minutos)
   const timerElement = document.getElementById("temporizador");
-  ativo = true; // Ativa controle
+  ativo = true;
 
-  // Inicia contagem se ativo
+  // Inicia contagem do tempo
   if (ativo) {
     intervalo = setInterval(() => {
       tempo--;
@@ -202,16 +261,14 @@ botaoStart.addEventListener("click", () => {
       const minutos = Math.floor(tempo / 60);
       const segundos = tempo % 60;
 
-      // Formata MM:SS
-      const tempoFormatado = `${minutos.toString().padStart(2, "0")}:${segundos
-        .toString()
-        .padStart(2, "0")}`;
+      // Formata tempo em MM:SS
+      const tempoFormatado = `${minutos.toString().padStart(2, "0")}:${segundos.toString().padStart(2, "0")}`;
 
-      // Atualiza o tempo na tela
+      // Atualiza o display do temporizador
       timerElement.innerHTML = `<h3>${tempoFormatado}</h3>`;
       timerElement.style.backgroundColor = "#5f5545";
 
-      // Quando o tempo acabar...
+      // Quando o tempo chega a zero, encerra o jogo
       if (tempo <= 0) {
         clearInterval(intervalo);
         timerElement.innerHTML = `<h3>Fim de Jogo</h3>`;
@@ -224,23 +281,21 @@ botaoStart.addEventListener("click", () => {
 // FUNÇÃO DE REINICIAR JOGO
 // ---------------------- //
 
-// Define comportamento do botão de reinício
+// Define o comportamento ao clicar no botão de reiniciar
 function restart() {
   botaoRestart.addEventListener("click", () => {
-    start = false; // Desativa o jogo
+    start = false; // Marca jogo como inativo
     somStart.play(); // Som de clique
 
     const timer = document.getElementById("temporizador");
-    clearInterval(intervalo); // Para o contador
+    clearInterval(intervalo); // Para contagem do tempo
 
-    timer.innerHTML = "<h3>05:00</h3>"; // Reseta a tela do tempo
-    ativo = false; // Marca como inativo
+    timer.innerHTML = "<h3>05:00</h3>"; // Reseta tempo na tela
+    ativo = false;
 
-    // Reativa botão de iniciar
+    // Reativa o botão de iniciar
     botaoStart.disabled = false;
     botaoStart.style.backgroundColor = "";
     botaoStart.style.borderColor = "";
   });
 }
-
-
