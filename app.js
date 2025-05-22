@@ -77,6 +77,7 @@ pecaSelect = document.querySelectorAll(".peca-branca, .peca-preta");
 // Para cada peça encontrada, adiciona um evento de clique
 pecaSelect.forEach((peca) => {
   peca.addEventListener("click", (event) => {
+    
     // Se o jogo não começou, exibe alerta e ignora o clique
     if (!start) { 
       somErro.play(); 
@@ -87,10 +88,11 @@ pecaSelect.forEach((peca) => {
       },500)
       return;}
 
-    event.stopPropagation(); // Evita que o clique afete elementos pai
+     // Evita que o clique afete elementos pai
 
     // Se a peça clicada já está selecionada, desmarca
     if (peca.classList.contains("selecionada")) {
+      
       selecionada = false;
       selectP = null;
       peca.classList.remove("selecionada");
@@ -102,18 +104,18 @@ pecaSelect.forEach((peca) => {
 
     // Remove qualquer seleção anterior
     if(cor == "branca" && turno%2 == 0){
+      event.stopPropagation();
       pecaSelect.forEach((c) => c.classList.remove("selecionada"));
       peca.classList.add("selecionada");
       selecionada = true;
       selectP = peca.id; 
-      turno++;
     }
      if(cor == "preta" && turno%2 != 0){
+      event.stopPropagation();
       pecaSelect.forEach((c) => c.classList.remove("selecionada"));
       peca.classList.add("selecionada");
       selecionada = true;
       selectP = peca.id; 
-      turno++;
     }
     
 
@@ -180,16 +182,15 @@ function movimentoPeao(origem, destino, cor) {
 
   // Movimento de captura na diagonal
   const capturarDiagonal = linhaD === linhaO + direcao && Math.abs(colD - colO) === 1 && destinoPeca !== "" && destinoPeca[1] !== cor[0];
-  if(capturarDiagonal){
-    let peca = document.querySelector(`[data-pos="${selectC}"]`);
-    let pecaCapturada = peca.querySelector('p');
-    pecaCapturada.remove()
-  }
+
+  console.log("Tentando capturar peão:", { origem, destino, cor });
+  console.log("destinoPeca, capturarDiagonal:", destinoPeca, capturarDiagonal);
+  
 
   return avancarUma || avancarDuas || capturarDiagonal; // Retorna verdadeiro se qualquer um for válido
 }
 
-// Verifica se o movimento do peão é válido
+// Verifica se o movimento do cavalo é válido
 function movimentoCavalo(origem, destino, cor) {
   const [linhaO, colO] = origem.split(",").map(Number); // Origem
   const [linhaD, colD] = destino.split(",").map(Number); // Destino
@@ -199,18 +200,52 @@ function movimentoCavalo(origem, destino, cor) {
   [1, -2], [1, 2], [2, -1], [2, 1]
 ];
 
-  const destinoPeca = tabuleiro[linhaD][colD]; // Verifica se há peça no destino
-
   // Movimento
   const avancar = direcao.some(([dx,dy]) => 
   linhaD === linhaO + dx && colD == colO + dy);
 
-  const destinoValido = destinoPeca === "";
-
-  const podeMover = avancar && destinoValido;
-
-  return podeMover;
+  return avancar;
 }
+
+// Verifica se o movimento da torre é válido
+function movimentoTorre(origem, destino, cor) {
+  const [linhaO, colO] = origem.split(",").map(Number); // Origem
+  const [linhaD, colD] = destino.split(",").map(Number); // Destino
+
+  // Movimento
+  const avancar = 
+ (linhaD === linhaO || colD === colO) && // Movimento horizontal ou vertical
+  caminhoLivre(linhaO, colO, linhaD, colD) // Caminho sem bloqueios
+
+function caminhoLivre(linhaO, colO, linhaD, colD) {
+  // Calcula a direção do movimento nas linhas e colunas.
+  // Pode ser -1 (subindo/esquerda), 0 (mesma linha ou coluna) ou 1 (descendo/direita).
+  const deltaLinha = Math.sign(linhaD - linhaO);
+  const deltaColuna = Math.sign(colD - colO);
+
+  // Inicializa linha e coluna, começando na primeira casa depois da origem.
+  let linha = linhaO + deltaLinha;
+  let coluna = colO + deltaColuna;
+
+  // Loop até chegar na casa de destino (sem incluir ela)
+  while (linha !== linhaD || coluna !== colD) {
+    // Verifica se há alguma peça na casa atual do caminho
+    if (tabuleiro[linha][coluna] !== "") {
+      return false; // Caminho bloqueado
+    }
+
+    // Anda na direção correta
+    linha += deltaLinha;
+    coluna += deltaColuna;
+  }
+
+  return true; // Nenhuma peça no caminho, movimento permitido
+}
+
+  return avancar;
+}
+
+// Verifica se o movimento do bispo é válido
 
 // ---------------------- //
 // FUNÇÃO: MOVIMENTAR PEÇA
@@ -220,6 +255,7 @@ function movimentoCavalo(origem, destino, cor) {
 const casaMove = () => {
   let peca = document.getElementById(selectP); // Obtém elemento da peça
   let casa = document.querySelector(`[data-pos="${selectC}"]`); // Obtém a casa destino
+
 
   if (peca && casa) {
     const origem = peca.parentNode.getAttribute("data-pos"); // Posição de origem
@@ -237,21 +273,35 @@ const casaMove = () => {
     else if (tipo == "cavalo"){
       podeMover = movimentoCavalo(origem, destino, cor);
     }
+    // Verifica se o movimento da torre é válido
+    else if (tipo == "torre"){
+      podeMover = movimentoTorre(origem, destino, cor);
+    }
+    else if (tipo == "bispo"){
+      podeMover = movimentoBispo(origem, destino, cor);
+    }
     else {
       // Outras peças ainda não implementadas (por padrão, permite)
       podeMover = true;
     }
 
+
     // Se o movimento não for válido, exibe mensagem e para
     if (!podeMover) {
-      console.log("Movimento inválido para peão.");
+      console.log("Movimento inválido para", tipo);
       return;
     }
 
+     // --- CAPTURA ---
+     const pecaCapturada = casa.querySelector(".peca-preta, .peca-branca");
+     if (pecaCapturada) {
+     pecaCapturada.remove();
+     }
     atualizarEstadoTabuleiro(origem, destino); // Atualiza o tabuleiro
     peca.parentNode.removeChild(peca); // Remove peça da casa atual
     somMove.play(); // Toca som de movimento
     casa.appendChild(peca); // Adiciona peça na nova casa
+    turno++;
 
     peca.classList.remove("selecionada"); // Remove marcação de selecionada
     selecionada = false;
@@ -304,6 +354,7 @@ botaoStart.addEventListener("click", () => {
   // Inicia contagem do tempo
   if (ativo) {
     intervalo = setInterval(() => {
+      if(turno%2 == 0){
       tempo--;
 
       const minutos = Math.floor(tempo / 60);
@@ -321,7 +372,7 @@ botaoStart.addEventListener("click", () => {
         clearInterval(intervalo);
         timerElement.innerHTML = `<h3>Fim de Jogo</h3>`;
       }
-    }, 1000); // Executa a cada segundo
+  }}, 1000); // Executa a cada segundo
   }
 });
 
@@ -345,5 +396,8 @@ function restart() {
     botaoStart.disabled = false;
     botaoStart.style.backgroundColor = "";
     botaoStart.style.borderColor = "";
+    setTimeout(() => {
+      window.location.reload();
+    }, 400)
   });
 }
