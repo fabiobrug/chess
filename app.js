@@ -43,6 +43,7 @@ let somErro = new Audio("sounds/error-10-206498.mp3");
 // ---------------------- //
 // ESTADOS DO JOGO
 // ---------------------- //
+let origemPeca = null;
 
 // Variável para armazenar peças selecionadas
 let pecaSelect = null;
@@ -59,6 +60,8 @@ let selectP;
 // Posição da casa clicada
 let selectC;
 
+let selectO;
+
 // Booleano indicando se há uma peça atualmente selecionada
 let selecionada = false;
 
@@ -73,11 +76,12 @@ let turno = 0;
 
 // Seleciona todas as peças do tabuleiro (classes de brancas e pretas)
 pecaSelect = document.querySelectorAll(".peca-branca, .peca-preta");
-
+origemPeca = document.querySelectorAll("[data-pos]");
 // Para cada peça encontrada, adiciona um evento de clique
 pecaSelect.forEach((peca) => {
+  
   peca.addEventListener("click", (event) => {
-    
+  
     // Se o jogo não começou, exibe alerta e ignora o clique
     if (!start) { 
       somErro.play(); 
@@ -88,11 +92,8 @@ pecaSelect.forEach((peca) => {
       },500)
       return;}
 
-     // Evita que o clique afete elementos pai
-
     // Se a peça clicada já está selecionada, desmarca
-    if (peca.classList.contains("selecionada")) {
-      
+    if (peca.classList.contains("selecionada") ) {
       selecionada = false;
       selectP = null;
       peca.classList.remove("selecionada");
@@ -109,6 +110,8 @@ pecaSelect.forEach((peca) => {
       peca.classList.add("selecionada");
       selecionada = true;
       selectP = peca.id; 
+      selectO = peca.parentElement.getAttribute("data-pos");
+      console.log("Posição da peça selecionada:", selectO);
     }
      if(cor == "preta" && turno%2 != 0){
       event.stopPropagation();
@@ -116,11 +119,15 @@ pecaSelect.forEach((peca) => {
       peca.classList.add("selecionada");
       selecionada = true;
       selectP = peca.id; 
-    }
-    
+      selectO = peca.parentElement.getAttribute("data-pos");
+      console.log("Posição da peça selecionada:", selectO);
+    }    
+
 
   });
 });
+
+
 
 // ---------------------- //
 // SELEÇÃO DE CASAS
@@ -129,6 +136,7 @@ pecaSelect.forEach((peca) => {
 // Seleciona todas as casas com atributo `data-pos`
 casaSelect = document.querySelectorAll("[data-pos]");
 
+
 // Para cada casa, adiciona evento de clique
 casaSelect.forEach((casa) => {
   casa.addEventListener("click", (event) => {
@@ -136,7 +144,9 @@ casaSelect.forEach((casa) => {
     if (!start) return;
 
     // Ignora se nenhuma peça foi selecionada
-    if (!selecionada) return;
+    if (!selecionada) {
+      return;}
+
 
     // Armazena a posição clicada
     selectC = casa.dataset.pos;
@@ -202,7 +212,8 @@ function movimentoCavalo(origem, destino, cor) {
 
   // Movimento
   const avancar = direcao.some(([dx,dy]) => 
-  linhaD === linhaO + dx && colD == colO + dy);
+  linhaD === linhaO + dx && 
+  colD == colO + dy);
 
   return avancar;
 }
@@ -245,43 +256,47 @@ function caminhoLivre(linhaO, colO, linhaD, colD) {
   return avancar;
 }
 
-// Verifica se o movimento do bispo é válido ______NAO FINALIZADO AINDA
-function movimentoBispo(origem, destino, cor){
+// Verifica se o movimento do bispo é válido
+function movimentoBispo(origem, destino, cor, corCasasD, corCasasO){
   const [linhaO, colO] = origem.split(",").map(Number);
   const [linhaD, colD] = destino.split(",").map(Number);
   console.log(cor)
-  
+  console.log(tabuleiro[linhaO][colO])
+  console.log(tabuleiro)
+  console.log("Casa origem: ", corCasasO)
+  console.log("Casa destino: ", corCasasD)
 
- const direcao = cor === "branca" ? -1 : 1;
+  const avancar = 
+  (Math.abs(linhaD - linhaO) === Math.abs(colD - colO)) && // Diagonal
+  caminhoLivre(linhaO, colO, linhaD, colD) // Caminho sem bloqueios
 
-console.log(tabuleiro[linhaO + direcao][colO])
-  const Diagonal = 
-  peaoB(linhaO, colO,linhaD, colD) &&
+  function caminhoLivre(linhaO, colO, linhaD, colD) {
+  // Calcula a direção do movimento nas linhas e colunas.
+  // Pode ser -1 (subindo/esquerda), 0 (mesma linha ou coluna) ou 1 (descendo/direita).
+  const deltaLinha = Math.sign(linhaD - linhaO);
+  const deltaColuna = Math.sign(colD - colO);
 
-  tabuleiro[linhaO + direcao][colO]  &&
-  tabuleiro[linhaO + direcao][colO]  
-   
+  // Inicializa linha e coluna, começando na primeira casa depois da origem.
+  let linha = linhaO + deltaLinha;
+  let coluna = colO + deltaColuna;
 
-  function peaoB(linhaO, colO,linhaD, colD) {
-    if(((linhaD + colD)%2 != 0)){
-      return true
+  // Loop até chegar na casa de destino (sem incluir ela)
+  while (linha !== linhaD || coluna !== colD) {
+    // Verifica se há alguma peça na casa atual do caminho
+    if (tabuleiro[linha][coluna] !== "") {
+      return false; // Caminho bloqueado
     }
-    return false
+
+    // Anda na direção correta
+    linha += deltaLinha;
+    coluna += deltaColuna;
   }
-  function peao(linhaO, colO,linhaD, colD) {
-    if(((linhaD + colD)%2 != 0)){
-      return true
-    }
-    return false
-  }
-  
-  
-  
-  return Diagonal;
+
+  return true; // Nenhuma peça no caminho, movimento permitido
 }
 
-
-
+  return avancar;
+}
 
 // ---------------------- //
 // FUNÇÃO: MOVIMENTAR PEÇA
@@ -291,13 +306,18 @@ console.log(tabuleiro[linhaO + direcao][colO])
 const casaMove = () => {
   let peca = document.getElementById(selectP); // Obtém elemento da peça
   let casa = document.querySelector(`[data-pos="${selectC}"]`); // Obtém a casa destino
-
+  let casaO = document.querySelector(`[data-pos="${selectO}"]`); // Obtém a casa origem
 
   if (peca && casa) {
     const origem = peca.parentNode.getAttribute("data-pos"); // Posição de origem
     const destino = selectC; // Posição de destino
     const tipo = peca.id.split("-")[0]; // Tipo da peça (ex: "peao")
     const cor = peca.classList.contains("peca-branca") ? "branca" : "preta"; // Cor da peça
+    const corCasasD = casa.classList.contains("casas-claras") ? "branca" : "preta"; //Cor da casa destino
+    const corCasasO = casaO.classList.contains("casas-claras") ? "branca" : "preta"; //Cor da casa destino
+
+     console.log("Casa origem: ", corCasasO)
+     console.log("Casa destino: ", corCasasD)
 
     let podeMover = false;
 
@@ -314,7 +334,9 @@ const casaMove = () => {
       podeMover = movimentoTorre(origem, destino, cor);
     }
     else if (tipo == "bispo"){
-      podeMover = movimentoBispo(origem, destino, cor);
+      console.log(podeMover)
+      podeMover = movimentoBispo(origem, destino, cor, corCasasD, corCasasO);
+      console.log(tipo)
     }
     else {
       // Outras peças ainda não implementadas (por padrão, permite)

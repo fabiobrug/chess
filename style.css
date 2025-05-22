@@ -28,7 +28,7 @@ body{
 }
 
 .casas{
-    border-radius: 2px;
+    border-radius: 1px;
     background-color: #b58863;
     height: 80px;
     width: 80px;
@@ -38,7 +38,7 @@ body{
 }
 
 .casas-claras{
-    border-radius: 2px;
+    border-radius: 1px;
     background-color: #f0d9b5;
     height: 80px;
     width: 80px;
