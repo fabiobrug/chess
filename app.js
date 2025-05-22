@@ -245,7 +245,43 @@ function caminhoLivre(linhaO, colO, linhaD, colD) {
   return avancar;
 }
 
-// Verifica se o movimento do bispo é válido
+// Verifica se o movimento do bispo é válido ______NAO FINALIZADO AINDA
+function movimentoBispo(origem, destino, cor){
+  const [linhaO, colO] = origem.split(",").map(Number);
+  const [linhaD, colD] = destino.split(",").map(Number);
+  console.log(cor)
+  
+
+ const direcao = cor === "branca" ? -1 : 1;
+
+console.log(tabuleiro[linhaO + direcao][colO])
+  const Diagonal = 
+  peaoB(linhaO, colO,linhaD, colD) &&
+
+  tabuleiro[linhaO + direcao][colO]  &&
+  tabuleiro[linhaO + direcao][colO]  
+   
+
+  function peaoB(linhaO, colO,linhaD, colD) {
+    if(((linhaD + colD)%2 != 0)){
+      return true
+    }
+    return false
+  }
+  function peao(linhaO, colO,linhaD, colD) {
+    if(((linhaD + colD)%2 != 0)){
+      return true
+    }
+    return false
+  }
+  
+  
+  
+  return Diagonal;
+}
+
+
+
 
 // ---------------------- //
 // FUNÇÃO: MOVIMENTAR PEÇA
