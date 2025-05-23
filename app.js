@@ -298,6 +298,87 @@ function movimentoBispo(origem, destino, cor, corCasasD, corCasasO){
   return avancar;
 }
 
+// Verifica se o movimento da rainha é válido
+function movimentoRainha(origem, destino, cor) {
+  const [linhaO, colO] = origem.split(",").map(Number); // Origem
+  const [linhaD, colD] = destino.split(",").map(Number); // Destino
+
+  // Movimento
+  const avancar = 
+  caminhoLivre(linhaO, colO, linhaD, colD) // Caminho sem bloqueios
+
+function caminhoLivre(linhaO, colO, linhaD, colD) {
+  // Calcula a direção do movimento nas linhas e colunas.
+  // Pode ser -1 (subindo/esquerda), 0 (mesma linha ou coluna) ou 1 (descendo/direita).
+  const deltaLinha = Math.sign(linhaD - linhaO);
+  const deltaColuna = Math.sign(colD - colO);
+
+  // Inicializa linha e coluna, começando na primeira casa depois da origem.
+  let linha = linhaO + deltaLinha;
+  let coluna = colO + deltaColuna;
+
+  // Loop até chegar na casa de destino (sem incluir ela)
+  while (linha !== linhaD || coluna !== colD) {
+    // Verifica se há alguma peça na casa atual do caminho
+    if (tabuleiro[linha][coluna] !== "") {
+      return false; // Caminho bloqueado
+    }
+
+    // Anda na direção correta
+    linha += deltaLinha;
+    coluna += deltaColuna;
+  }
+
+  return true; // Nenhuma peça no caminho, movimento permitido
+}
+
+  return avancar;
+}
+
+// Verifica se o movimento da rainha é válido
+function movimentoRei(origem, destino, cor) {
+  const [linhaO, colO] = origem.split(",").map(Number); // Origem
+  const [linhaD, colD] = destino.split(",").map(Number); // Destino
+
+  console.log((Math.abs(linhaO - linhaD) === 1))
+  console.log((Math.abs(colO - colD) === 1))
+
+  // Movimento
+  const avancar = 
+  ((Math.abs(linhaO - linhaD) === 1) &&
+  (Math.abs(colO - colD) === 1)) ||
+  ((Math.abs(linhaO - linhaD) === 1) &&
+  (Math.abs(colO - colD) === 0)) ||
+  ((Math.abs(linhaO - linhaD) === 0) &&
+  (Math.abs(colO - colD) === 1)) &&
+  caminhoLivre(linhaO, colO, linhaD, colD) // Caminho sem bloqueios
+
+function caminhoLivre(linhaO, colO, linhaD, colD) {
+  // Calcula a direção do movimento nas linhas e colunas.
+  // Pode ser -1 (subindo/esquerda), 0 (mesma linha ou coluna) ou 1 (descendo/direita).
+  const deltaLinha = Math.sign(linhaD - linhaO);
+  const deltaColuna = Math.sign(colD - colO);
+
+  // Inicializa linha e coluna, começando na primeira casa depois da origem.
+  let linha = linhaO + deltaLinha;
+  let coluna = colO + deltaColuna;
+
+  // Loop até chegar na casa de destino (sem incluir ela)
+  while (linha !== linhaD || coluna !== colD) {
+    // Verifica se há alguma peça na casa atual do caminho
+    if (tabuleiro[linha][coluna] !== "") {
+      return false; // Caminho bloqueado
+    }
+    linha += deltaLinha;
+    coluna += deltaColuna;
+  }
+
+  return true; // Nenhuma peça no caminho, movimento permitido
+}
+
+  return avancar;
+}
+
 // ---------------------- //
 // FUNÇÃO: MOVIMENTAR PEÇA
 // ---------------------- //
@@ -336,7 +417,14 @@ const casaMove = () => {
     else if (tipo == "bispo"){
       console.log(podeMover)
       podeMover = movimentoBispo(origem, destino, cor, corCasasD, corCasasO);
-      console.log(tipo)
+    }
+    else if (tipo == "rainha"){
+      console.log(podeMover)
+      podeMover = movimentoRainha(origem, destino, cor);
+    }
+    else if (tipo == "rei"){
+      console.log(podeMover)
+      podeMover = movimentoRei(origem, destino, cor);
     }
     else {
       // Outras peças ainda não implementadas (por padrão, permite)
@@ -360,6 +448,8 @@ const casaMove = () => {
     somMove.play(); // Toca som de movimento
     casa.appendChild(peca); // Adiciona peça na nova casa
     turno++;
+    ativo++;
+    iniciarTemporizador();
 
     peca.classList.remove("selecionada"); // Remove marcação de selecionada
     selecionada = false;
@@ -382,14 +472,23 @@ function startGame() {
 // ---------------------- //
 
 // Controla se o temporizador está ativo
-let ativo = true;
+let ativo = 0;
+
 
 // Armazena o intervalo do temporizador
 let intervalo = null;
 
+let intervalo2 = null;
+
 // Obtém os botões de iniciar e reiniciar pelo ID
 let botaoStart = document.getElementById("btn-start");
 let botaoRestart = document.getElementById("btn-restart");
+
+
+  let tempo = 300;
+  let tempo2 = 300;  // Tempo em segundos (5 minutos)
+  const timerElement = document.getElementById("temporizador1");
+  const timerElement2 = document.getElementById("temporizador2");
 
 // Inicializa o botão de reinício
 restart();
@@ -401,38 +500,58 @@ botaoStart.addEventListener("click", () => {
   somStart.play(); // Som de clique ao iniciar
 
   // Muda estilo do botão para mostrar que está ativo
-  botaoStart.style.backgroundColor = "#c62828";
-  botaoStart.style.borderColor = "#ef5350";
+  botaoStart.style.backgroundColor = " #c62828";
+  botaoStart.style.borderColor = " #ef5350";
   botaoStart.disabled = true; // Impede múltiplos cliques
 
-  let tempo = 300; // Tempo em segundos (5 minutos)
-  const timerElement = document.getElementById("temporizador");
-  ativo = true;
-
-  // Inicia contagem do tempo
-  if (ativo) {
-    intervalo = setInterval(() => {
-      if(turno%2 == 0){
-      tempo--;
-
-      const minutos = Math.floor(tempo / 60);
-      const segundos = tempo % 60;
-
-      // Formata tempo em MM:SS
-      const tempoFormatado = `${minutos.toString().padStart(2, "0")}:${segundos.toString().padStart(2, "0")}`;
-
-      // Atualiza o display do temporizador
-      timerElement.innerHTML = `<h3>${tempoFormatado}</h3>`;
-      timerElement.style.backgroundColor = "#5f5545";
-
-      // Quando o tempo chega a zero, encerra o jogo
-      if (tempo <= 0) {
-        clearInterval(intervalo);
-        timerElement.innerHTML = `<h3>Fim de Jogo</h3>`;
-      }
-  }}, 1000); // Executa a cada segundo
-  }
+ // ativo = true;
+   iniciarTemporizador();
 });
+
+function iniciarTemporizador() {
+  if (ativo % 2 === 0) {
+    clearInterval(intervalo2); // Garante que o outro pare
+    intervalo = setInterval(() => {
+      if (turno % 2 === 0) {
+        timerElement.style.backgroundColor = " #f0d9b5"
+        tempo--;
+
+        const minutos = Math.floor(tempo / 60);
+        const segundos = tempo % 60;
+
+        timerElement.innerHTML = `<h3>${minutos.toString().padStart(2, "0")}:${segundos.toString().padStart(2, "0")}</h3>`;
+        timerElement2.style.backgroundColor = "rgba(240, 217, 181, 0.4)"
+
+
+        if (tempo <= 0) {
+          clearInterval(intervalo);
+          timerElement.innerHTML = `<h3>Fim de Jogo</h3>`;
+        }
+      }
+    }, 1000);
+  } else {
+    clearInterval(intervalo); // Para o primeiro
+    intervalo2 = setInterval(() => {
+      if (turno % 2 !== 0) {
+        timerElement2.style.backgroundColor = " #3c2f23"
+        tempo2--;
+
+        const minutos = Math.floor(tempo2 / 60);
+        const segundos = tempo2 % 60;
+
+        timerElement2.innerHTML = `<h3>${minutos.toString().padStart(2, "0")}:${segundos.toString().padStart(2, "0")}</h3>`;
+        timerElement.style.backgroundColor = "rgba(240, 217, 181, 0.4)"
+
+        if (tempo2 <= 0) {
+          clearInterval(intervalo2);
+          timerElement2.innerHTML = `<h3>Fim de Jogo</h3>`;
+        }
+      }
+    }, 1000);
+  }
+}
+
+
 
 // ---------------------- //
 // FUNÇÃO DE REINICIAR JOGO
@@ -444,7 +563,7 @@ function restart() {
     start = false; // Marca jogo como inativo
     somStart.play(); // Som de clique
 
-    const timer = document.getElementById("temporizador");
+    const timer = document.getElementById("temporizador1");
     clearInterval(intervalo); // Para contagem do tempo
 
     timer.innerHTML = "<h3>05:00</h3>"; // Reseta tempo na tela
