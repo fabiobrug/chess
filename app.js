@@ -1,17 +1,16 @@
 // ---------------------- //
 // ESTADOS DO TABULEIRO
 // ---------------------- //
-
 // Estado inicial do tabuleiro, representado como uma matriz 8x8
 const tabuleiro = [
   ["rB", "nB", "bB", "qB", "kB", "bB", "nB", "rB"], // Linha 0: peças pretas principais
   ["pB", "pB", "pB", "pB", "pB", "pB", "pB", "pB"], // Linha 1: peões pretos
-  ["",   "",   "",   "",   "",   "",   "",   "" ], // Linha 2: casas vazias
-  ["",   "",   "",   "",   "",   "",   "",   "" ], // Linha 3: casas vazias
-  ["",   "",   "",   "",   "",   "",   "",   "" ], // Linha 4: casas vazias
-  ["",   "",   "",   "",   "",   "",   "",   "" ], // Linha 5: casas vazias
+  ["", "", "", "", "", "", "", ""], // Linha 2: casas vazias
+  ["", "", "", "", "", "", "", ""], // Linha 3: casas vazias
+  ["", "", "", "", "", "", "", ""], // Linha 4: casas vazias
+  ["", "", "", "", "", "", "", ""], // Linha 5: casas vazias
   ["pW", "pW", "pW", "pW", "pW", "pW", "pW", "pW"], // Linha 6: peões brancos
-  ["rW", "nW", "bW", "qW", "kW", "bW", "nW", "rW"]  // Linha 7: peças brancas principais
+  ["rW", "nW", "bW", "qW", "kW", "bW", "nW", "rW"], // Linha 7: peças brancas principais
 ];
 console.log(tabuleiro); // Exibe o estado inicial do tabuleiro no console
 
@@ -33,6 +32,8 @@ console.log(tabuleiro); // Exibe o estado inicial do tabuleiro no console
 
 // Cria objeto de áudio para som ao mover uma peça
 let somMove = new Audio("sounds/move-self.mp3");
+
+let somCaptura = new Audio("sounds/capture.mp3");
 
 // Cria objeto de áudio para som ao clicar em iniciar ou reiniciar
 let somStart = new Audio("sounds/mouse-click-sound-233951.mp3");
@@ -62,6 +63,8 @@ let selectC;
 
 let selectO;
 
+let selectD;
+
 // Booleano indicando se há uma peça atualmente selecionada
 let selecionada = false;
 
@@ -69,6 +72,8 @@ let selecionada = false;
 let start = false;
 
 let turno = 0;
+
+let finalGame = document.getElementById("whiteWins");
 
 // ---------------------- //
 // SELEÇÃO DE PEÇAS
@@ -79,21 +84,20 @@ pecaSelect = document.querySelectorAll(".peca-branca, .peca-preta");
 origemPeca = document.querySelectorAll("[data-pos]");
 // Para cada peça encontrada, adiciona um evento de clique
 pecaSelect.forEach((peca) => {
-  
   peca.addEventListener("click", (event) => {
-  
     // Se o jogo não começou, exibe alerta e ignora o clique
-    if (!start) { 
-      somErro.play(); 
-      botaoStart.classList.add("btn-goChange")
+    if (!start) {
+      somErro.play();
+      botaoStart.classList.add("btn-goChange");
       setTimeout(() => {
-        botaoStart.classList.remove("btn-goChange")
-        botaoStart.classList.add("btn-go")
-      },500)
-      return;}
+        botaoStart.classList.remove("btn-goChange");
+        botaoStart.classList.add("btn-go");
+      }, 500);
+      return;
+    }
 
     // Se a peça clicada já está selecionada, desmarca
-    if (peca.classList.contains("selecionada") ) {
+    if (peca.classList.contains("selecionada")) {
       selecionada = false;
       selectP = null;
       peca.classList.remove("selecionada");
@@ -101,33 +105,28 @@ pecaSelect.forEach((peca) => {
     }
 
     const cor = peca.classList.contains("peca-branca") ? "branca" : "preta";
-    
 
     // Remove qualquer seleção anterior
-    if(cor == "branca" && turno%2 == 0){
+    if (cor == "branca" && turno % 2 == 0) {
       event.stopPropagation();
       pecaSelect.forEach((c) => c.classList.remove("selecionada"));
       peca.classList.add("selecionada");
       selecionada = true;
-      selectP = peca.id; 
+      selectP = peca.id;
       selectO = peca.parentElement.getAttribute("data-pos");
       console.log("Posição da peça selecionada:", selectO);
     }
-     if(cor == "preta" && turno%2 != 0){
+    if (cor == "preta" && turno % 2 != 0) {
       event.stopPropagation();
       pecaSelect.forEach((c) => c.classList.remove("selecionada"));
       peca.classList.add("selecionada");
       selecionada = true;
-      selectP = peca.id; 
+      selectP = peca.id;
       selectO = peca.parentElement.getAttribute("data-pos");
       console.log("Posição da peça selecionada:", selectO);
-    }    
-
-
+    }
   });
 });
-
-
 
 // ---------------------- //
 // SELEÇÃO DE CASAS
@@ -135,7 +134,6 @@ pecaSelect.forEach((peca) => {
 
 // Seleciona todas as casas com atributo `data-pos`
 casaSelect = document.querySelectorAll("[data-pos]");
-
 
 // Para cada casa, adiciona evento de clique
 casaSelect.forEach((casa) => {
@@ -145,12 +143,11 @@ casaSelect.forEach((casa) => {
 
     // Ignora se nenhuma peça foi selecionada
     if (!selecionada) {
-      return;}
-
+      return;
+    }
 
     // Armazena a posição clicada
     selectC = casa.dataset.pos;
-    
     // Tenta mover a peça
     casaMove();
   });
@@ -185,17 +182,26 @@ function movimentoPeao(origem, destino, cor) {
   const destinoPeca = tabuleiro[linhaD][colD]; // Verifica se há peça no destino
 
   // Movimento de 1 casa para frente sem capturar
-  const avancarUma = linhaD === linhaO + direcao && colD === colO && destinoPeca === "";
+  const avancarUma =
+    linhaD === linhaO + direcao && colD === colO && destinoPeca === "";
 
   // Movimento de 2 casas a partir da posição inicial
-  const avancarDuas = linhaO === linhaInicial && linhaD === linhaO + 2 * direcao && colD === colO && tabuleiro[linhaO + direcao][colO] === "" && destinoPeca === "";
+  const avancarDuas =
+    linhaO === linhaInicial &&
+    linhaD === linhaO + 2 * direcao &&
+    colD === colO &&
+    tabuleiro[linhaO + direcao][colO] === "" &&
+    destinoPeca === "";
 
   // Movimento de captura na diagonal
-  const capturarDiagonal = linhaD === linhaO + direcao && Math.abs(colD - colO) === 1 && destinoPeca !== "" && destinoPeca[1] !== cor[0];
+  const capturarDiagonal =
+    linhaD === linhaO + direcao &&
+    Math.abs(colD - colO) === 1 &&
+    destinoPeca !== "" &&
+    destinoPeca[1] !== cor[0];
 
   console.log("Tentando capturar peão:", { origem, destino, cor });
   console.log("destinoPeca, capturarDiagonal:", destinoPeca, capturarDiagonal);
-  
 
   return avancarUma || avancarDuas || capturarDiagonal; // Retorna verdadeiro se qualquer um for válido
 }
@@ -206,14 +212,20 @@ function movimentoCavalo(origem, destino, cor) {
   const [linhaD, colD] = destino.split(",").map(Number); // Destino
 
   const direcao = [
-  [-2, -1], [-2, 1], [-1, -2], [-1, 2],
-  [1, -2], [1, 2], [2, -1], [2, 1]
-];
+    [-2, -1],
+    [-2, 1],
+    [-1, -2],
+    [-1, 2],
+    [1, -2],
+    [1, 2],
+    [2, -1],
+    [2, 1],
+  ];
 
   // Movimento
-  const avancar = direcao.some(([dx,dy]) => 
-  linhaD === linhaO + dx && 
-  colD == colO + dy);
+  const avancar = direcao.some(
+    ([dx, dy]) => linhaD === linhaO + dx && colD == colO + dy
+  );
 
   return avancar;
 }
@@ -224,76 +236,76 @@ function movimentoTorre(origem, destino, cor) {
   const [linhaD, colD] = destino.split(",").map(Number); // Destino
 
   // Movimento
-  const avancar = 
- (linhaD === linhaO || colD === colO) && // Movimento horizontal ou vertical
-  caminhoLivre(linhaO, colO, linhaD, colD) // Caminho sem bloqueios
+  const avancar =
+    (linhaD === linhaO || colD === colO) && // Movimento horizontal ou vertical
+    caminhoLivre(linhaO, colO, linhaD, colD); // Caminho sem bloqueios
 
-function caminhoLivre(linhaO, colO, linhaD, colD) {
-  // Calcula a direção do movimento nas linhas e colunas.
-  // Pode ser -1 (subindo/esquerda), 0 (mesma linha ou coluna) ou 1 (descendo/direita).
-  const deltaLinha = Math.sign(linhaD - linhaO);
-  const deltaColuna = Math.sign(colD - colO);
+  function caminhoLivre(linhaO, colO, linhaD, colD) {
+    // Calcula a direção do movimento nas linhas e colunas.
+    // Pode ser -1 (subindo/esquerda), 0 (mesma linha ou coluna) ou 1 (descendo/direita).
+    const deltaLinha = Math.sign(linhaD - linhaO);
+    const deltaColuna = Math.sign(colD - colO);
 
-  // Inicializa linha e coluna, começando na primeira casa depois da origem.
-  let linha = linhaO + deltaLinha;
-  let coluna = colO + deltaColuna;
+    // Inicializa linha e coluna, começando na primeira casa depois da origem.
+    let linha = linhaO + deltaLinha;
+    let coluna = colO + deltaColuna;
 
-  // Loop até chegar na casa de destino (sem incluir ela)
-  while (linha !== linhaD || coluna !== colD) {
-    // Verifica se há alguma peça na casa atual do caminho
-    if (tabuleiro[linha][coluna] !== "") {
-      return false; // Caminho bloqueado
+    // Loop até chegar na casa de destino (sem incluir ela)
+    while (linha !== linhaD || coluna !== colD) {
+      // Verifica se há alguma peça na casa atual do caminho
+      if (tabuleiro[linha][coluna] !== "") {
+        return false; // Caminho bloqueado
+      }
+
+      // Anda na direção correta
+      linha += deltaLinha;
+      coluna += deltaColuna;
     }
 
-    // Anda na direção correta
-    linha += deltaLinha;
-    coluna += deltaColuna;
+    return true; // Nenhuma peça no caminho, movimento permitido
   }
-
-  return true; // Nenhuma peça no caminho, movimento permitido
-}
 
   return avancar;
 }
 
 // Verifica se o movimento do bispo é válido
-function movimentoBispo(origem, destino, cor, corCasasD, corCasasO){
+function movimentoBispo(origem, destino, cor, corCasasD, corCasasO) {
   const [linhaO, colO] = origem.split(",").map(Number);
   const [linhaD, colD] = destino.split(",").map(Number);
-  console.log(cor)
-  console.log(tabuleiro[linhaO][colO])
-  console.log(tabuleiro)
-  console.log("Casa origem: ", corCasasO)
-  console.log("Casa destino: ", corCasasD)
+  console.log(cor);
+  console.log(tabuleiro[linhaO][colO]);
+  console.log(tabuleiro);
+  console.log("Casa origem: ", corCasasO);
+  console.log("Casa destino: ", corCasasD);
 
-  const avancar = 
-  (Math.abs(linhaD - linhaO) === Math.abs(colD - colO)) && // Diagonal
-  caminhoLivre(linhaO, colO, linhaD, colD) // Caminho sem bloqueios
+  const avancar =
+    Math.abs(linhaD - linhaO) === Math.abs(colD - colO) && // Diagonal
+    caminhoLivre(linhaO, colO, linhaD, colD); // Caminho sem bloqueios
 
   function caminhoLivre(linhaO, colO, linhaD, colD) {
-  // Calcula a direção do movimento nas linhas e colunas.
-  // Pode ser -1 (subindo/esquerda), 0 (mesma linha ou coluna) ou 1 (descendo/direita).
-  const deltaLinha = Math.sign(linhaD - linhaO);
-  const deltaColuna = Math.sign(colD - colO);
+    // Calcula a direção do movimento nas linhas e colunas.
+    // Pode ser -1 (subindo/esquerda), 0 (mesma linha ou coluna) ou 1 (descendo/direita).
+    const deltaLinha = Math.sign(linhaD - linhaO);
+    const deltaColuna = Math.sign(colD - colO);
 
-  // Inicializa linha e coluna, começando na primeira casa depois da origem.
-  let linha = linhaO + deltaLinha;
-  let coluna = colO + deltaColuna;
+    // Inicializa linha e coluna, começando na primeira casa depois da origem.
+    let linha = linhaO + deltaLinha;
+    let coluna = colO + deltaColuna;
 
-  // Loop até chegar na casa de destino (sem incluir ela)
-  while (linha !== linhaD || coluna !== colD) {
-    // Verifica se há alguma peça na casa atual do caminho
-    if (tabuleiro[linha][coluna] !== "") {
-      return false; // Caminho bloqueado
+    // Loop até chegar na casa de destino (sem incluir ela)
+    while (linha !== linhaD || coluna !== colD) {
+      // Verifica se há alguma peça na casa atual do caminho
+      if (tabuleiro[linha][coluna] !== "") {
+        return false; // Caminho bloqueado
+      }
+
+      // Anda na direção correta
+      linha += deltaLinha;
+      coluna += deltaColuna;
     }
 
-    // Anda na direção correta
-    linha += deltaLinha;
-    coluna += deltaColuna;
+    return true; // Nenhuma peça no caminho, movimento permitido
   }
-
-  return true; // Nenhuma peça no caminho, movimento permitido
-}
 
   return avancar;
 }
@@ -304,33 +316,32 @@ function movimentoRainha(origem, destino, cor) {
   const [linhaD, colD] = destino.split(",").map(Number); // Destino
 
   // Movimento
-  const avancar = 
-  caminhoLivre(linhaO, colO, linhaD, colD) // Caminho sem bloqueios
+  const avancar = caminhoLivre(linhaO, colO, linhaD, colD); // Caminho sem bloqueios
 
-function caminhoLivre(linhaO, colO, linhaD, colD) {
-  // Calcula a direção do movimento nas linhas e colunas.
-  // Pode ser -1 (subindo/esquerda), 0 (mesma linha ou coluna) ou 1 (descendo/direita).
-  const deltaLinha = Math.sign(linhaD - linhaO);
-  const deltaColuna = Math.sign(colD - colO);
+  function caminhoLivre(linhaO, colO, linhaD, colD) {
+    // Calcula a direção do movimento nas linhas e colunas.
+    // Pode ser -1 (subindo/esquerda), 0 (mesma linha ou coluna) ou 1 (descendo/direita).
+    const deltaLinha = Math.sign(linhaD - linhaO);
+    const deltaColuna = Math.sign(colD - colO);
 
-  // Inicializa linha e coluna, começando na primeira casa depois da origem.
-  let linha = linhaO + deltaLinha;
-  let coluna = colO + deltaColuna;
+    // Inicializa linha e coluna, começando na primeira casa depois da origem.
+    let linha = linhaO + deltaLinha;
+    let coluna = colO + deltaColuna;
 
-  // Loop até chegar na casa de destino (sem incluir ela)
-  while (linha !== linhaD || coluna !== colD) {
-    // Verifica se há alguma peça na casa atual do caminho
-    if (tabuleiro[linha][coluna] !== "") {
-      return false; // Caminho bloqueado
+    // Loop até chegar na casa de destino (sem incluir ela)
+    while (linha !== linhaD || coluna !== colD) {
+      // Verifica se há alguma peça na casa atual do caminho
+      if (tabuleiro[linha][coluna] !== "") {
+        return false; // Caminho bloqueado
+      }
+
+      // Anda na direção correta
+      linha += deltaLinha;
+      coluna += deltaColuna;
     }
 
-    // Anda na direção correta
-    linha += deltaLinha;
-    coluna += deltaColuna;
+    return true; // Nenhuma peça no caminho, movimento permitido
   }
-
-  return true; // Nenhuma peça no caminho, movimento permitido
-}
 
   return avancar;
 }
@@ -340,41 +351,39 @@ function movimentoRei(origem, destino, cor) {
   const [linhaO, colO] = origem.split(",").map(Number); // Origem
   const [linhaD, colD] = destino.split(",").map(Number); // Destino
 
-  console.log((Math.abs(linhaO - linhaD) === 1))
-  console.log((Math.abs(colO - colD) === 1))
+  console.log(Math.abs(linhaO - linhaD) === 1);
+  console.log(Math.abs(colO - colD) === 1);
 
   // Movimento
-  const avancar = 
-  ((Math.abs(linhaO - linhaD) === 1) &&
-  (Math.abs(colO - colD) === 1)) ||
-  ((Math.abs(linhaO - linhaD) === 1) &&
-  (Math.abs(colO - colD) === 0)) ||
-  ((Math.abs(linhaO - linhaD) === 0) &&
-  (Math.abs(colO - colD) === 1)) &&
-  caminhoLivre(linhaO, colO, linhaD, colD) // Caminho sem bloqueios
+  const avancar =
+    (Math.abs(linhaO - linhaD) === 1 && Math.abs(colO - colD) === 1) ||
+    (Math.abs(linhaO - linhaD) === 1 && Math.abs(colO - colD) === 0) ||
+    (Math.abs(linhaO - linhaD) === 0 &&
+      Math.abs(colO - colD) === 1 &&
+      caminhoLivre(linhaO, colO, linhaD, colD)); // Caminho sem bloqueios
 
-function caminhoLivre(linhaO, colO, linhaD, colD) {
-  // Calcula a direção do movimento nas linhas e colunas.
-  // Pode ser -1 (subindo/esquerda), 0 (mesma linha ou coluna) ou 1 (descendo/direita).
-  const deltaLinha = Math.sign(linhaD - linhaO);
-  const deltaColuna = Math.sign(colD - colO);
+  function caminhoLivre(linhaO, colO, linhaD, colD) {
+    // Calcula a direção do movimento nas linhas e colunas.
+    // Pode ser -1 (subindo/esquerda), 0 (mesma linha ou coluna) ou 1 (descendo/direita).
+    const deltaLinha = Math.sign(linhaD - linhaO);
+    const deltaColuna = Math.sign(colD - colO);
 
-  // Inicializa linha e coluna, começando na primeira casa depois da origem.
-  let linha = linhaO + deltaLinha;
-  let coluna = colO + deltaColuna;
+    // Inicializa linha e coluna, começando na primeira casa depois da origem.
+    let linha = linhaO + deltaLinha;
+    let coluna = colO + deltaColuna;
 
-  // Loop até chegar na casa de destino (sem incluir ela)
-  while (linha !== linhaD || coluna !== colD) {
-    // Verifica se há alguma peça na casa atual do caminho
-    if (tabuleiro[linha][coluna] !== "") {
-      return false; // Caminho bloqueado
+    // Loop até chegar na casa de destino (sem incluir ela)
+    while (linha !== linhaD || coluna !== colD) {
+      // Verifica se há alguma peça na casa atual do caminho
+      if (tabuleiro[linha][coluna] !== "") {
+        return false; // Caminho bloqueado
+      }
+      linha += deltaLinha;
+      coluna += deltaColuna;
     }
-    linha += deltaLinha;
-    coluna += deltaColuna;
-  }
 
-  return true; // Nenhuma peça no caminho, movimento permitido
-}
+    return true; // Nenhuma peça no caminho, movimento permitido
+  }
 
   return avancar;
 }
@@ -394,43 +403,46 @@ const casaMove = () => {
     const destino = selectC; // Posição de destino
     const tipo = peca.id.split("-")[0]; // Tipo da peça (ex: "peao")
     const cor = peca.classList.contains("peca-branca") ? "branca" : "preta"; // Cor da peça
-    const corCasasD = casa.classList.contains("casas-claras") ? "branca" : "preta"; //Cor da casa destino
-    const corCasasO = casaO.classList.contains("casas-claras") ? "branca" : "preta"; //Cor da casa destino
+    const corCasasD = casa.classList.contains("casas-claras")
+      ? "branca"
+      : "preta"; //Cor da casa destino
+    const corCasasO = casaO.classList.contains("casas-claras")
+      ? "branca"
+      : "preta"; //Cor da casa destino
 
-     console.log("Casa origem: ", corCasasO)
-     console.log("Casa destino: ", corCasasD)
+    const [linhaD, colD] = destino.split(",").map(Number); // Destino
+    const destinoPeca = tabuleiro[linhaD][colD];
+    console.log(destinoPeca);
+
+    console.log("Casa origem: ", corCasasO);
+    console.log("Casa destino: ", corCasasD);
 
     let podeMover = false;
 
     // Verifica se o movimento do peão é válido
     if (tipo === "peao") {
       podeMover = movimentoPeao(origem, destino, cor);
-    } 
+    }
     // Verifica se o movimento do cavalo é válido
-    else if (tipo == "cavalo"){
+    else if (tipo == "cavalo") {
       podeMover = movimentoCavalo(origem, destino, cor);
     }
     // Verifica se o movimento da torre é válido
-    else if (tipo == "torre"){
+    else if (tipo == "torre") {
       podeMover = movimentoTorre(origem, destino, cor);
-    }
-    else if (tipo == "bispo"){
-      console.log(podeMover)
+    } else if (tipo == "bispo") {
+      console.log(podeMover);
       podeMover = movimentoBispo(origem, destino, cor, corCasasD, corCasasO);
-    }
-    else if (tipo == "rainha"){
-      console.log(podeMover)
+    } else if (tipo == "rainha") {
+      console.log(podeMover);
       podeMover = movimentoRainha(origem, destino, cor);
-    }
-    else if (tipo == "rei"){
-      console.log(podeMover)
+    } else if (tipo == "rei") {
+      console.log(podeMover);
       podeMover = movimentoRei(origem, destino, cor);
-    }
-    else {
+    } else {
       // Outras peças ainda não implementadas (por padrão, permite)
       podeMover = true;
     }
-
 
     // Se o movimento não for válido, exibe mensagem e para
     if (!podeMover) {
@@ -438,23 +450,35 @@ const casaMove = () => {
       return;
     }
 
-     // --- CAPTURA ---
-     const pecaCapturada = casa.querySelector(".peca-preta, .peca-branca");
-     if (pecaCapturada) {
-     pecaCapturada.remove();
-     }
+    // --- CAPTURA ---
+    const pecaCapturada = casa.querySelector(".peca-preta, .peca-branca");
+    if (pecaCapturada) {
+      somCaptura.play();
+      pecaCapturada.remove();
+    }
+    if (!pecaCapturada) {
+      somMove.play();
+    }
+
     atualizarEstadoTabuleiro(origem, destino); // Atualiza o tabuleiro
     peca.parentNode.removeChild(peca); // Remove peça da casa atual
-    somMove.play(); // Toca som de movimento
     casa.appendChild(peca); // Adiciona peça na nova casa
     turno++;
     ativo++;
     iniciarTemporizador();
-
     peca.classList.remove("selecionada"); // Remove marcação de selecionada
     selecionada = false;
     selectP = null;
     selectC = null;
+
+    if (destinoPeca == "kB") {
+    
+      botaoStart.style.display = "none";
+      timerElement.style.display = "none";
+      timerElement2.style.display = "none";
+      finalGame.classList.add('ativo');
+      casaSelect.style.backgroundColor = "rgba(0,0,0,0.5)";
+    }
   }
 };
 
@@ -474,7 +498,6 @@ function startGame() {
 // Controla se o temporizador está ativo
 let ativo = 0;
 
-
 // Armazena o intervalo do temporizador
 let intervalo = null;
 
@@ -484,11 +507,10 @@ let intervalo2 = null;
 let botaoStart = document.getElementById("btn-start");
 let botaoRestart = document.getElementById("btn-restart");
 
-
-  let tempo = 300;
-  let tempo2 = 300;  // Tempo em segundos (5 minutos)
-  const timerElement = document.getElementById("temporizador1");
-  const timerElement2 = document.getElementById("temporizador2");
+let tempo = 300;
+let tempo2 = 300; // Tempo em segundos (5 minutos)
+const timerElement = document.getElementById("temporizador1");
+const timerElement2 = document.getElementById("temporizador2");
 
 // Inicializa o botão de reinício
 restart();
@@ -504,8 +526,8 @@ botaoStart.addEventListener("click", () => {
   botaoStart.style.borderColor = " #ef5350";
   botaoStart.disabled = true; // Impede múltiplos cliques
 
- // ativo = true;
-   iniciarTemporizador();
+  // ativo = true;
+  iniciarTemporizador();
 });
 
 function iniciarTemporizador() {
@@ -513,15 +535,16 @@ function iniciarTemporizador() {
     clearInterval(intervalo2); // Garante que o outro pare
     intervalo = setInterval(() => {
       if (turno % 2 === 0) {
-        timerElement.style.backgroundColor = " #f0d9b5"
+        timerElement.style.backgroundColor = " #f0d9b5";
         tempo--;
 
         const minutos = Math.floor(tempo / 60);
         const segundos = tempo % 60;
 
-        timerElement.innerHTML = `<h3>${minutos.toString().padStart(2, "0")}:${segundos.toString().padStart(2, "0")}</h3>`;
-        timerElement2.style.backgroundColor = "rgba(240, 217, 181, 0.4)"
-
+        timerElement.innerHTML = `<h3>${minutos
+          .toString()
+          .padStart(2, "0")}:${segundos.toString().padStart(2, "0")}</h3>`;
+        timerElement2.style.backgroundColor = "rgba(240, 217, 181, 0.4)";
 
         if (tempo <= 0) {
           clearInterval(intervalo);
@@ -533,14 +556,16 @@ function iniciarTemporizador() {
     clearInterval(intervalo); // Para o primeiro
     intervalo2 = setInterval(() => {
       if (turno % 2 !== 0) {
-        timerElement2.style.backgroundColor = " #3c2f23"
+        timerElement2.style.backgroundColor = " #3c2f23";
         tempo2--;
 
         const minutos = Math.floor(tempo2 / 60);
         const segundos = tempo2 % 60;
 
-        timerElement2.innerHTML = `<h3>${minutos.toString().padStart(2, "0")}:${segundos.toString().padStart(2, "0")}</h3>`;
-        timerElement.style.backgroundColor = "rgba(240, 217, 181, 0.4)"
+        timerElement2.innerHTML = `<h3>${minutos
+          .toString()
+          .padStart(2, "0")}:${segundos.toString().padStart(2, "0")}</h3>`;
+        timerElement.style.backgroundColor = "rgba(240, 217, 181, 0.4)";
 
         if (tempo2 <= 0) {
           clearInterval(intervalo2);
@@ -550,8 +575,6 @@ function iniciarTemporizador() {
     }, 1000);
   }
 }
-
-
 
 // ---------------------- //
 // FUNÇÃO DE REINICIAR JOGO
@@ -575,6 +598,6 @@ function restart() {
     botaoStart.style.borderColor = "";
     setTimeout(() => {
       window.location.reload();
-    }, 400)
+    }, 400);
   });
 }

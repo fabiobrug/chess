@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Rubik&display=swap" rel="stylesheet">
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 </head>
 <body>
@@ -14,7 +15,7 @@
     <h1 class="texto">Chess.fab.<span class="io">io<span></h1>
     <div id="temporizador2" class="tempo2"><h3>05:00</h3></div>
     </div>
-   <div id="tabuleiro">
+   <div id="tabuleiro" class="tab">
     <div data-peca="torre" data-pos="0,0" class="casas"><p id="torre-preta-1" class="peca-preta">♜</p></div>
     <div data-pos="0,1" class="casas-claras"><p id="cavalo-preta-1" class="peca-preta">♞</p></div>
     <div data-pos="0,2" class="casas"><p id="bispo-preta-1" class="peca-preta">♝</p></div>
@@ -82,8 +83,13 @@
 </div>
     <div class="container">
         <button class="btn-go" id="btn-start"><strong>Start</strong></button>
-        <button class="btn-back" id="btn-restart"><strong>&#8634</strong></button>
+        <button class="btn-back" id="btn-restart"><strong>Rematch</strong></button>
         <div id="temporizador1" class="tempo"><h3>05:00</h3></div>
+    </div>
+    <div>
+        <div id="whiteWins" class="finalGame">
+            <div class="cima"><i class="fa fa-trophy fa-2x" aria-hidden="true"></i><h3>You Won!<br><span class="cong">Congratiulations</span></h3>
+        </div>
     </div>
 
 
