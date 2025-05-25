@@ -101,6 +101,7 @@ pecaSelect.forEach((peca) => {
       selecionada = false;
       selectP = null;
       peca.classList.remove("selecionada");
+      peca.classList.remove(".")
       return;
     }
 
@@ -131,7 +132,7 @@ pecaSelect.forEach((peca) => {
 });
 
 // ---------------------- //
-// ESCOLHEU UMA PEÇA (MUDA A COR DAS CASAS QUE TEM POSSIVEIS MOVIMENTOS VALIDOS)
+// ESCOLHEU UMA PEÇA (MUDA A COR DAS CASAS QUE TEM POSSIVEIS MOVIMENTOS VALIDOSAS)
 // ---------------------- //
 
 possivelDestino = () => {
@@ -191,7 +192,6 @@ mudaRainha = (origem, cor) => {
         if (pecaCor !== cor) {
           destacarCasa(linha, coluna); // Pode capturar
         }
-        if()
         break; // Bloqueia a partir daqui
       }
 
@@ -206,7 +206,6 @@ function destacarCasa(linha, coluna) {
     elemento.classList.add("destacar"); // Adiciona uma classe CSS
   }
 }
-
 
 
 // ---------------------- //
