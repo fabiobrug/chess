@@ -665,16 +665,11 @@ const casaMove = () => {
 
     let podeMover = false;
 
-    // Verifica se o movimento do peão é válido
     if (tipo === "peao") {
       podeMover = movimentoPeao(origem, destino, cor);
-    }
-    // Verifica se o movimento do cavalo é válido
-    else if (tipo == "cavalo") {
+    }else if (tipo == "cavalo") {
       podeMover = movimentoCavalo(origem, destino, cor);
-    }
-    // Verifica se o movimento da torre é válido
-    else if (tipo == "torre") {
+    } else if (tipo == "torre") {
       podeMover = movimentoTorre(origem, destino, cor);
     } else if (tipo == "bispo") {
       console.log(podeMover);
