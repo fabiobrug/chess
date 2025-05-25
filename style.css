@@ -248,5 +248,10 @@ i{
     color:  #fcfaef83;
 }
 
+.destacar {
+  background-color: rgba(255, 255, 0, 0.5);
+  border: 2px solid yellow;
+}
+
 
 

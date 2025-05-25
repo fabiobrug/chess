@@ -115,6 +115,7 @@ pecaSelect.forEach((peca) => {
       selectP = peca.id;
       selectO = peca.parentElement.getAttribute("data-pos");
       console.log("Posição da peça selecionada:", selectO);
+      possivelDestino()
     }
     if (cor == "preta" && turno % 2 != 0) {
       event.stopPropagation();
@@ -124,9 +125,89 @@ pecaSelect.forEach((peca) => {
       selectP = peca.id;
       selectO = peca.parentElement.getAttribute("data-pos");
       console.log("Posição da peça selecionada:", selectO);
+      possivelDestino()
     }
   });
 });
+
+// ---------------------- //
+// ESCOLHEU UMA PEÇA (MUDA A COR DAS CASAS QUE TEM POSSIVEIS MOVIMENTOS VALIDOS)
+// ---------------------- //
+
+possivelDestino = () => {
+  let peca = document.getElementById(selectP);
+  const origem = peca.parentNode.getAttribute("data-pos");
+  const cor = peca.classList.contains("peca-branca") ? "branca" : "preta"; // Cor da peça
+  const tipo = peca.id.split("-")[0]; 
+  console.log(tipo)
+
+
+ if (tipo === "peao") {
+      podeMover = mudaPeao(origem, destino, cor);
+    }
+    // Verifica se o movimento do cavalo é válido
+    else if (tipo == "cavalo") {
+      podeMover = mudaCavalo(origem, destino, cor);
+    }
+    // Verifica se o movimento da torre é válido
+    else if (tipo == "torre") {
+      podeMover = mudaTorre(origem, destino, cor);
+    } else if (tipo == "bispo") {
+      podeMover = mudaBispo(origem, destino, cor, corCasasD, corCasasO);
+    } else if (tipo == "rainha") {
+      podeMover = mudaRainha(origem,cor);
+    } else if (tipo == "rei") {
+      console.log(podeMover);
+      podeMover = mudaoRei(origem, destino, cor);
+    } 
+}
+
+mudaRainha = (origem, cor) => {
+  const [linhaO, colO] = origem.split(",").map(Number);
+  const direcoes = [
+    [1, 0],  // baixo
+    [-1, 0], // cima
+    [0, 1],  // direita
+    [0, -1], // esquerda
+    [1, 1],  // diagonal baixo-direita
+    [1, -1], // diagonal baixo-esquerda
+    [-1, 1], // diagonal cima-direita
+    [-1, -1] // diagonal cima-esquerda
+  ];
+
+  direcoes.forEach(([deltaLinha, deltaColuna]) => {
+    let linha = linhaO + deltaLinha;
+    let coluna = colO + deltaColuna;
+
+    
+    while (linha >= 0 && linha <= 7 && coluna >= 0 && coluna <= 7) {
+      const casa = tabuleiro[linha][coluna];
+
+      if (casa === "") {
+        destacarCasa(linha, coluna); // Casa livre
+      } else {
+        const pecaCor = casa.includes("preta") ? "preta" : "branca";
+        // Tem peça na casa
+        if (pecaCor !== cor) {
+          destacarCasa(linha, coluna); // Pode capturar
+        }
+        if()
+        break; // Bloqueia a partir daqui
+      }
+
+      linha += deltaLinha;
+      coluna += deltaColuna;
+    }
+  });
+}
+function destacarCasa(linha, coluna) {
+  const elemento = document.querySelector(`[data-pos="${linha},${coluna}"]`);
+  if (elemento) {
+    elemento.classList.add("destacar"); // Adiciona uma classe CSS
+  }
+}
+
+
 
 // ---------------------- //
 // SELEÇÃO DE CASAS
@@ -472,11 +553,10 @@ const casaMove = () => {
     selectC = null;
 
     if (destinoPeca == "kB") {
-    
       botaoStart.style.display = "none";
       timerElement.style.display = "none";
       timerElement2.style.display = "none";
-      finalGame.classList.add('ativo');
+      finalGame.classList.add("ativo");
       casaSelect.style.backgroundColor = "rgba(0,0,0,0.5)";
     }
   }
