@@ -101,7 +101,7 @@ pecaSelect.forEach((peca) => {
       selecionada = false;
       selectP = null;
       peca.classList.remove("selecionada");
-      peca.classList.remove(".")
+      peca.classList.remove(".");
       removerDestacar();
       return;
     }
@@ -112,24 +112,24 @@ pecaSelect.forEach((peca) => {
     if (cor == "branca" && turno % 2 == 0) {
       event.stopPropagation();
       pecaSelect.forEach((c) => c.classList.remove("selecionada"));
-      removerDestacar()
+      removerDestacar();
       peca.classList.add("selecionada");
       selecionada = true;
       selectP = peca.id;
       selectO = peca.parentElement.getAttribute("data-pos");
       console.log("Posição da peça selecionada:", selectO);
-      possivelDestino()
+      possivelDestino();
     }
     if (cor == "preta" && turno % 2 != 0) {
       event.stopPropagation();
       pecaSelect.forEach((c) => c.classList.remove("selecionada"));
-      removerDestacar()
+      removerDestacar();
       peca.classList.add("selecionada");
       selecionada = true;
       selectP = peca.id;
       selectO = peca.parentElement.getAttribute("data-pos");
       console.log("Posição da peça selecionada:", selectO);
-      possivelDestino()
+      possivelDestino();
     }
   });
 });
@@ -142,23 +142,23 @@ possivelDestino = () => {
   let peca = document.getElementById(selectP);
   const origem = peca.parentNode.getAttribute("data-pos");
   const cor = peca.classList.contains("peca-branca") ? "branca" : "preta"; // Cor da peça
-  const tipo = peca.id.split("-")[0]; 
-  console.log(tipo)
+  const tipo = peca.id.split("-")[0];
+  console.log(tipo);
 
- if (tipo === "peao") {
-       mudaPeao(origem, cor);
-    }else if (tipo == "cavalo") {
-      mudaCavalo(origem, cor);
-    }else if (tipo == "torre") {
-       mudaTorre(origem, cor);
-    } else if (tipo == "bispo") {
-      mudaBispo(origem, cor);
-    } else if (tipo == "rainha") {
-      mudaRainha(origem, cor);
-    } else if (tipo == "rei") {
-      mudaRei(origem, cor);
-    } 
-}
+  if (tipo === "peao") {
+    mudaPeao(origem, cor);
+  } else if (tipo == "cavalo") {
+    mudaCavalo(origem, cor);
+  } else if (tipo == "torre") {
+    mudaTorre(origem, cor);
+  } else if (tipo == "bispo") {
+    mudaBispo(origem, cor);
+  } else if (tipo == "rainha") {
+    mudaRainha(origem, cor);
+  } else if (tipo == "rei") {
+    mudaRei(origem, cor);
+  }
+};
 
 mudaPeao = (origem, cor) => {
   const [linhaO, colO] = origem.split(",").map(Number);
@@ -179,7 +179,10 @@ mudaPeao = (origem, cor) => {
   }
 
   // Captura na diagonal
-  [[direcao, -1], [direcao, 1]].forEach(([dx, dy]) => {
+  [
+    [direcao, -1],
+    [direcao, 1],
+  ].forEach(([dx, dy]) => {
     const linha = linhaO + dx;
     const coluna = colO + dy;
     const alvo = tabuleiro[linha]?.[coluna];
@@ -191,17 +194,21 @@ mudaPeao = (origem, cor) => {
       }
     }
   });
-}
-
+};
 
 mudaCavalo = (origem, cor) => {
-   const [linhaO, colO] = origem.split(",").map(Number);
-   const direcoes = [
-    [-2, -1], [-2, 1], [-1, -2], [-1, 2],
-    [1, -2], [1, 2], [2, -1], [2, 1]
+  const [linhaO, colO] = origem.split(",").map(Number);
+  const direcoes = [
+    [-2, -1],
+    [-2, 1],
+    [-1, -2],
+    [-1, 2],
+    [1, -2],
+    [1, 2],
+    [2, -1],
+    [2, 1],
   ];
 
-  
   direcoes.forEach(([dx, dy]) => {
     const linha = linhaO + dx;
     const coluna = colO + dy;
@@ -213,15 +220,14 @@ mudaCavalo = (origem, cor) => {
       }
     }
   });
-}
-
+};
 
 mudaTorre = (origem, cor) => {
   const [linhaO, colO] = origem.split(",").map(Number);
   const direcoes = [
-    [1, 0],  // baixo
+    [1, 0], // baixo
     [-1, 0], // cima
-    [0, 1],  // direita
+    [0, 1], // direita
     [0, -1], // esquerda
   ];
 
@@ -229,7 +235,6 @@ mudaTorre = (origem, cor) => {
     let linha = linhaO + deltaLinha;
     let coluna = colO + deltaColuna;
 
-    
     while (linha >= 0 && linha <= 7 && coluna >= 0 && coluna <= 7) {
       const casa = tabuleiro[linha][coluna];
 
@@ -248,22 +253,21 @@ mudaTorre = (origem, cor) => {
       coluna += deltaColuna;
     }
   });
-}
+};
 
 mudaBispo = (origem, cor) => {
   const [linhaO, colO] = origem.split(",").map(Number);
   const direcoes = [
-    [1, 1],  // diagonal baixo-direita
+    [1, 1], // diagonal baixo-direita
     [1, -1], // diagonal baixo-esquerda
     [-1, 1], // diagonal cima-direita
-    [-1, -1] // diagonal cima-esquerda
+    [-1, -1], // diagonal cima-esquerda
   ];
 
   direcoes.forEach(([deltaLinha, deltaColuna]) => {
     let linha = linhaO + deltaLinha;
     let coluna = colO + deltaColuna;
 
-    
     while (linha >= 0 && linha <= 7 && coluna >= 0 && coluna <= 7) {
       const casa = tabuleiro[linha][coluna];
 
@@ -282,27 +286,25 @@ mudaBispo = (origem, cor) => {
       coluna += deltaColuna;
     }
   });
-
-}
+};
 
 mudaRainha = (origem, cor) => {
   const [linhaO, colO] = origem.split(",").map(Number);
   const direcoes = [
-    [1, 0],  // baixo
+    [1, 0], // baixo
     [-1, 0], // cima
-    [0, 1],  // direita
+    [0, 1], // direita
     [0, -1], // esquerda
-    [1, 1],  // diagonal baixo-direita
+    [1, 1], // diagonal baixo-direita
     [1, -1], // diagonal baixo-esquerda
     [-1, 1], // diagonal cima-direita
-    [-1, -1] // diagonal cima-esquerda
+    [-1, -1], // diagonal cima-esquerda
   ];
 
   direcoes.forEach(([deltaLinha, deltaColuna]) => {
     let linha = linhaO + deltaLinha;
     let coluna = colO + deltaColuna;
 
-    
     while (linha >= 0 && linha <= 7 && coluna >= 0 && coluna <= 7) {
       const casa = tabuleiro[linha][coluna];
 
@@ -321,27 +323,26 @@ mudaRainha = (origem, cor) => {
       coluna += deltaColuna;
     }
   });
-}
+};
 
 mudaRei = (origem, cor) => {
   const [linhaO, colO] = origem.split(",").map(Number);
   const direcoes = [
-    [1, 0],  // baixo
+    [1, 0], // baixo
     [-1, 0], // cima
-    [0, 1],  // direita
+    [0, 1], // direita
     [0, -1], // esquerda
-    [1, 1],  // diagonal baixo-direita
+    [1, 1], // diagonal baixo-direita
     [1, -1], // diagonal baixo-esquerda
     [-1, 1], // diagonal cima-direita
-    [-1, -1] // diagonal cima-esquerda
+    [-1, -1], // diagonal cima-esquerda
   ];
 
   direcoes.forEach(([deltaLinha, deltaColuna]) => {
     let linha = linhaO + deltaLinha;
     let coluna = colO + deltaColuna;
 
-    
-    if(linha >= 0 && linha <= 7 && coluna >= 0 && coluna <= 7) {
+    if (linha >= 0 && linha <= 7 && coluna >= 0 && coluna <= 7) {
       const casa = tabuleiro[linha][coluna];
 
       if (casa === "") {
@@ -356,9 +357,7 @@ mudaRei = (origem, cor) => {
       }
     }
   });
-}
-
-
+};
 
 function destacarCasa(linha, coluna) {
   const elemento = document.querySelector(`[data-pos="${linha},${coluna}"]`);
@@ -369,10 +368,8 @@ function destacarCasa(linha, coluna) {
 
 function removerDestacar() {
   const casas = document.querySelectorAll(".destacar");
-  casas.forEach(casa => casa.classList.remove("destacar"));
+  casas.forEach((casa) => casa.classList.remove("destacar"));
 }
-
-
 
 // ---------------------- //
 // SELEÇÃO DE CASAS
@@ -448,6 +445,10 @@ function movimentoPeao(origem, destino, cor) {
 
   console.log("Tentando capturar peão:", { origem, destino, cor });
   console.log("destinoPeca, capturarDiagonal:", destinoPeca, capturarDiagonal);
+
+  if(reiVulneravel()){
+    return false
+  }
 
   return avancarUma || avancarDuas || capturarDiagonal; // Retorna verdadeiro se qualquer um for válido
 }
@@ -580,7 +581,6 @@ function movimentoRainha(origem, destino, cor) {
       if (tabuleiro[linha][coluna] !== "") {
         return false; // Caminho bloqueado
       }
-
       // Anda na direção correta
       linha += deltaLinha;
       coluna += deltaColuna;
@@ -635,6 +635,251 @@ function movimentoRei(origem, destino, cor) {
 }
 
 // ---------------------- //
+// FUNÇÃO: XEQUE
+// ---------------------- //
+
+check = (destino, tipo, cor) => {
+  if (tipo === "peao") {
+    checkByPeao(destino, cor);
+  } else if (tipo == "cavalo") {
+    checkByCavalo(destino, cor);
+  } else if (tipo == "torre") {
+    checkByTorre(destino, cor);
+  } else if (tipo == "bispo") {
+    checkByBispo(destino, cor);
+  } else if (tipo == "rainha") {
+    checkByRainha(destino, cor);
+  } else if (tipo == "rei") {
+    checkByRei(destino, cor);
+  }
+};
+
+checkByPeao = (destino, cor) => {
+  const [linhaO, colO] = destino.split(",").map(Number);
+  const direcao = cor === "branca" ? -1 : 1;
+
+  // Captura na diagonal
+  [
+    [direcao, -1],
+    [direcao, 1],
+  ].forEach(([dx, dy]) => {
+    const linha = linhaO + dx;
+    const coluna = colO + dy;
+    const alvo = tabuleiro[linha]?.[coluna];
+
+    if (alvo !== "" && alvo !== undefined) {
+      if (alvo === "kB") {
+         console.log("PEAO FAZ XEQUE");
+      }
+    }
+  });
+}
+
+checkByCavalo = (destino, cor) => {
+  const [linhaO, colO] = destino.split(",").map(Number);
+  const direcoes = [
+    [-2, -1],
+    [-2, 1],
+    [-1, -2],
+    [-1, 2],
+    [1, -2],
+    [1, 2],
+    [2, -1],
+    [2, 1],
+  ];
+
+  direcoes.forEach(([dx, dy]) => {
+    const linha = linhaO + dx;
+    const coluna = colO + dy;
+
+    if (linha >= 0 && linha <= 7 && coluna >= 0 && coluna <= 7) {
+      const casa = tabuleiro[linha][coluna];
+      casa.includes("B") ? "preta" : "branca"
+       if (casa === "kB") {
+        console.log("CAVALO FAZ XEQUE");
+      }
+     
+    }
+  });
+}
+
+checkByTorre = (destino, cor) => {
+  const [linhaO, colO] = destino.split(",").map(Number);
+  const direcoes = [
+    [1, 0], // baixo
+    [-1, 0], // cima
+    [0, 1], // direita
+    [0, -1], // esquerda
+  ];
+
+  direcoes.forEach(([deltaLinha, deltaColuna]) => {
+    let linha = linhaO + deltaLinha;
+    let coluna = colO + deltaColuna;
+
+    while (linha >= 0 && linha <= 7 && coluna >= 0 && coluna <= 7) {
+      const casa = tabuleiro[linha][coluna];
+
+      console.log(casa);
+      if (casa === "kB") {
+        console.log("TORRE FAZ XEQUE");
+      }
+
+      const pecaCor = casa.includes("B") ? "preta" : "branca";
+
+      if (pecaCor !== cor) {
+        break;
+      }
+
+      linha += deltaLinha;
+      coluna += deltaColuna;
+    }
+  });
+}
+
+checkByBispo = (destino, cor) => {
+const [linhaO, colO] = destino.split(",").map(Number);
+  const direcoes = [
+    [1, 1], // diagonal baixo-direita
+    [1, -1], // diagonal baixo-esquerda
+    [-1, 1], // diagonal cima-direita
+    [-1, -1], // diagonal cima-esquerda
+  ];
+
+  direcoes.forEach(([deltaLinha, deltaColuna]) => {
+    let linha = linhaO + deltaLinha;
+    let coluna = colO + deltaColuna;
+
+    while (linha >= 0 && linha <= 7 && coluna >= 0 && coluna <= 7) {
+      const casa = tabuleiro[linha][coluna];
+
+      console.log(casa);
+      if (casa === "kB") {
+        console.log("BISBO FAZ XEQUE");
+      }
+
+      const pecaCor = casa.includes("B") ? "preta" : "branca";
+
+      if (pecaCor !== cor) {
+        break;
+      }
+
+      linha += deltaLinha;
+      coluna += deltaColuna;
+    }
+  });
+}
+
+checkByRainha = (destino, cor) => {
+  const [linhaO, colO] = destino.split(",").map(Number);
+  const direcoes = [
+    [1, 0], // baixo
+    [-1, 0], // cima
+    [0, 1], // direita
+    [0, -1], // esquerda
+    [1, 1], // diagonal baixo-direita
+    [1, -1], // diagonal baixo-esquerda
+    [-1, 1], // diagonal cima-direita
+    [-1, -1], // diagonal cima-esquerda
+  ];
+
+  direcoes.forEach(([deltaLinha, deltaColuna]) => {
+    let linha = linhaO + deltaLinha;
+    let coluna = colO + deltaColuna;
+
+    while (linha >= 0 && linha <= 7 && coluna >= 0 && coluna <= 7) {
+      const casa = tabuleiro[linha][coluna];
+
+      console.log(casa);
+      if (casa === "kB") {
+        console.log("RAINHA FAZ XEQUE");
+      }
+
+      const pecaCor = casa.includes("B") ? "preta" : "branca";
+
+      if (pecaCor !== cor) {
+        break;
+      }
+
+      linha += deltaLinha;
+      coluna += deltaColuna;
+    }
+  });
+};
+
+reiVulneravel = () => {
+  let rei = getElementById("rei-preta");
+  let reiPos = rei.parentNode.getAttribute("data-pos"); 
+  const [linhaO, colO] = reiPos.split(",").map(Number);
+
+   const direcoes = [
+    [1, 0], // baixo
+    [-1, 0], // cima
+    [0, 1], // direita
+    [0, -1], // esquerda
+    [1, 1], // diagonal baixo-direita
+    [1, -1], // diagonal baixo-esquerda
+    [-1, 1], // diagonal cima-direita
+    [-1, -1], // diagonal cima-esquerda
+
+    //cavalo:
+    [-2, -1],
+    [-2, 1],
+    [-1, -2],
+    [-1, 2],
+    [1, -2],
+    [1, 2],
+    [2, -1],
+    [2, 1],
+  ];
+
+  direcoes.forEach(([deltaLinha, deltaColuna]) => {
+    let linha = linhaO + deltaLinha;
+    let coluna = colO + deltaColuna;
+
+    while (linha >= 0 && linha <= 7 && coluna >= 0 && coluna <= 7) {
+      const casa = tabuleiro[linha][coluna];
+
+
+      const pecaCor = casa.includes("B") ? "preta" : "branca";
+       if (pecaCor !== cor) {
+          break;
+        }
+        //____________________________________________________________
+        //rei esta sob ataque!
+
+
+      linha += deltaLinha;
+      coluna += deltaColuna;
+    }
+  });
+
+
+}
+
+// (TECNICAMENTE O REI NAO PODE DAR CHEQUE, MAS SEU MOVIMENTO PODE GERAR UM CHEQUE DESCOBERTO. ESSA FUNCAO SERA DEIXADA PARA O FUTURO)
+// checkByRei = (destino, cor) => {}
+
+// ---------------------- //
+// FUNÇÃO: XEQUE-MATE
+// ---------------------- //
+
+checkmate = (origem, tipo, cor) => {
+  if (tipo === "peao") {
+    checkMateByPeao(origem, cor);
+  } else if (tipo == "cavalo") {
+    checkMateByCavalo(origem, cor);
+  } else if (tipo == "torre") {
+    checkMateByTorre(origem, cor);
+  } else if (tipo == "bispo") {
+    checkMateByBispo(origem, cor);
+  } else if (tipo == "rainha") {
+    checkMateByRainha(origem, cor);
+  } else if (tipo == "rei") {
+    checkMateByRei(origem, cor);
+  }
+};
+
+// ---------------------- //
 // FUNÇÃO: MOVIMENTAR PEÇA
 // ---------------------- //
 
@@ -667,7 +912,7 @@ const casaMove = () => {
 
     if (tipo === "peao") {
       podeMover = movimentoPeao(origem, destino, cor);
-    }else if (tipo == "cavalo") {
+    } else if (tipo == "cavalo") {
       podeMover = movimentoCavalo(origem, destino, cor);
     } else if (tipo == "torre") {
       podeMover = movimentoTorre(origem, destino, cor);
@@ -702,7 +947,7 @@ const casaMove = () => {
     }
 
     atualizarEstadoTabuleiro(origem, destino); // Atualiza o tabuleiro
-    removerDestacar()
+    removerDestacar();
     peca.parentNode.removeChild(peca); // Remove peça da casa atual
     casa.appendChild(peca); // Adiciona peça na nova casa
     turno++;
@@ -712,6 +957,8 @@ const casaMove = () => {
     selecionada = false;
     selectP = null;
     selectC = null;
+
+    check(destino, tipo, cor);
 
     if (destinoPeca == "kB") {
       botaoStart.style.display = "none";

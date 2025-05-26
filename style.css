@@ -21,7 +21,7 @@ body{
     align-items: center;
     min-height: 100vh;
     flex-direction: column;
-    background-color: #2e2e2e;
+    background-color: #231f20;
 }
 
 #tabuleiro{
@@ -110,10 +110,15 @@ body{
     width: 130px;
     font-size: 25px;
     border-radius: 10px;
-    background-color: #2e7d32;
-    border: 2px solid #66bb6a; 
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+    background-color: #81b64c;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: #45753c;
+    border-bottom-width: 4px;
+    border-bottom-style: solid; 
 }
+
 
 .btn-goChange{
     display: inline-flex;
@@ -133,10 +138,10 @@ body{
 }
 
 .btn-go:hover {
-    background-color: #4caf50;  
+    background-color: #a1cf60;  
     color: #ffffff;
     transform: scale(1.05);
-    border-color: #a5d6a7;
+    border-color: #45753c;
   }
 
   .btn-back{
@@ -150,17 +155,21 @@ body{
     width: 130px;
     font-size: 25px;
     border-radius: 10px;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom-color: #ffb74d;
+    border-bottom-width: 4px;
+    border-bottom-style: solid; 
     background-color: #ff8f00;
-    border: 2px solid #ffb74d; 
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
 }
-
 
 .btn-back:hover {
     background-color: #ffa726;  
     color: #ffffff;
     transform: scale(1.05);
-    border-color: #ffddaa;
+    border-color: #ffb74d;
   }
 
   .tempo{
