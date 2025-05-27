@@ -14,6 +14,8 @@ let tabuleiro = [
 ];
 console.log(tabuleiro); // Exibe o estado inicial do tabuleiro no console
 
+let copiaTabuleiro;
+
 /*
 -r : rook (torre)
 -n : knight (cavalo)
@@ -76,6 +78,8 @@ let turno = 0;
 let finalGame = document.getElementById("whiteWins");
 
 let checkmate;
+
+let check = false;
 
 // ---------------------- //
 // SELEÇÃO DE PEÇAS
@@ -403,14 +407,17 @@ casaSelect.forEach((casa) => {
 // ---------------------- //
 
 // Atualiza a matriz do tabuleiro com a nova posição da peça
-function atualizarEstadoTabuleiro(origem, destino) {
+function atualizarEstadoTabuleiro(tabuleiroAlvo, origem, destino) {
+  console.log(destino); 
+  console.log(origem); 
   const [linhaO, colO] = origem.split(",").map(Number); // Origem em formato [linha, coluna]
   const [linhaD, colD] = destino.split(",").map(Number); // Destino em formato [linha, coluna]
 
-  tabuleiro[linhaD][colD] = tabuleiro[linhaO][colO]; // Move a peça
-  tabuleiro[linhaO][colO] = ""; // Limpa a posição antiga
+  tabuleiroAlvo[linhaD][colD] = tabuleiroAlvo[linhaO][colO]; // Move a peça
+  tabuleiroAlvo[linhaO][colO] = ""; // Limpa a posição antiga
   console.log(tabuleiro); // Mostra tabuleiro atualizado no console
 }
+
 
 // ---------------------- //
 // FUNÇÃO: VERIFICA MOVIMENTO DO PEAO
@@ -636,21 +643,7 @@ function movimentoRei(origem, destino, cor) {
 // FUNÇÃO: XEQUE
 // ---------------------- //
 
-check = (destino, tipo, cor) => {
-  if (tipo === "peao") {
-    checkByPeao(destino, cor);
-  } else if (tipo == "cavalo") {
-    checkByCavalo(destino, cor);
-  } else if (tipo == "torre") {
-    checkByTorre(destino, cor);
-  } else if (tipo == "bispo") {
-    checkByBispo(destino, cor);
-  } else if (tipo == "rainha") {
-    checkByRainha(destino, cor);
-  } else if (tipo == "rei") {
-    checkByRei(destino, cor);
-  }
-};
+
 
 checkByPeao = (destino, cor) => {
   const [linhaO, colO] = destino.split(",").map(Number);
@@ -668,6 +661,7 @@ checkByPeao = (destino, cor) => {
     if (alvo !== "" && alvo !== undefined) {
       if (alvo === "kB") {
         console.log("PEAO FAZ XEQUE");
+        check = true;
       }
     }
   });
@@ -695,6 +689,7 @@ checkByCavalo = (destino, cor) => {
       casa.includes("B") ? "preta" : "branca";
       if (casa === "kB") {
         console.log("CAVALO FAZ XEQUE");
+        check = true;
       }
     }
   });
@@ -719,6 +714,7 @@ checkByTorre = (destino, cor) => {
       console.log(casa);
       if (casa === "kB") {
         console.log("TORRE FAZ XEQUE");
+        check = true;
       }
 
       const pecaCor = casa.includes("B") ? "preta" : "branca";
@@ -752,6 +748,7 @@ checkByBispo = (destino, cor) => {
       console.log(casa);
       if (casa === "kB") {
         console.log("BISBO FAZ XEQUE");
+        check = true;
       }
 
       const pecaCor = casa.includes("B") ? "preta" : "branca";
@@ -766,8 +763,53 @@ checkByBispo = (destino, cor) => {
   });
 };
 
-checkByRainha = (destino, cor) => {
-  const [linhaO, colO] = destino.split(",").map(Number);
+checkByRainha = (origem, destino, cor) => {
+  const [linhaD, colD] = destino.split(",").map(Number);
+  check = false;
+  const direcoes = [
+    [1, 0], // baixo
+    [-1, 0], // cima
+    [0, 1], // direita
+    [0, -1], // esquerda
+    [1, 1], // diagonal baixo-direita
+    [1, -1], // diagonal baixo-esquerda
+    [-1, 1], // diagonal cima-direita
+    [-1, -1], // diagonal cima-esquerda
+  ];
+
+  direcoes.forEach(([deltaLinha, deltaColuna]) => {
+    let linha = linhaD + deltaLinha;
+    let coluna = colD + deltaColuna;
+
+    while (linha >= 0 && linha <= 7 && coluna >= 0 && coluna <= 7) {
+      const casa = tabuleiro[linha][coluna];
+
+      if (casa === "kB") {
+        console.log("RAINHA FAZ XEQUE");
+        check = true; 
+        pecaR = destino;
+      }
+
+      const pecaCor = casa.includes("B") ? "preta" : "branca";
+
+      if (pecaCor !== cor) {
+        break;
+      }
+
+      linha += deltaLinha;
+      coluna += deltaColuna;
+    }
+  });
+
+  return check;
+};
+
+movimentoGeraCheck = (pecaR,cor) => {
+  console.log(pecaR)
+  const [linhaO, colO] = pecaR.split(",").map(Number);
+  const reiInimigo = cor === "preta" ? "kB" : "kP"; 
+  console.log([linhaO, colO])
+  check = false;
   const direcoes = [
     [1, 0], // baixo
     [-1, 0], // cima
@@ -784,84 +826,58 @@ checkByRainha = (destino, cor) => {
     let coluna = colO + deltaColuna;
 
     while (linha >= 0 && linha <= 7 && coluna >= 0 && coluna <= 7) {
-      const casa = tabuleiro[linha][coluna];
+      const casa = copiaTabuleiro[linha][coluna];
 
-      if (casa === "kB") {
-        console.log("RAINHA FAZ XEQUE");
-      }
-
-      const pecaCor = casa.includes("B") ? "preta" : "branca";
-
-      if (pecaCor !== cor) {
-        break;
-      }
-
+    if(casa === ""){
       linha += deltaLinha;
       coluna += deltaColuna;
+      continue
+    }
+
+    if (casa === reiInimigo) {
+        // Encontrou o rei preto na direção
+        check = true;
+      }
+      
+      break;
     }
   });
-};
 
-reiVulneravel = (cor) => {
-  let rei = document.getElementById("rei-preta");
-  let reiCor = rei.classList.contains("peca-branca") ? "branca" : "preta";
-  let reiPos = rei.parentNode.getAttribute("data-pos");
-  const [linhaO, colO] = reiPos.split(",").map(Number);
-  console.log(cor)
-  console.log(reiCor)
 
-  const direcoes1 = [
-    [1, 0], // baixo
-    [-1, 0], // cima
-    [0, 1], // direita
-    [0, -1], // esquerda
-    [1, 1], // diagonal baixo-direita
-    [1, -1], // diagonal baixo-esquerda
-    [-1, 1], // diagonal cima-direita
-    [-1, -1], // diagonal cima-esquerda
-  ];
+  return check;
 
-  direcoes1.forEach(([deltaLinha, deltaColuna]) => {
-  let linha = linhaO + deltaLinha;
-  let coluna = colO + deltaColuna;
+}
 
-  while (linha >= 0 && linha <= 7 && coluna >= 0 && coluna <= 7) {
-    const casa = tabuleiro[linha][coluna];
-
- 
-      if (casa === "") {
-        console.log("Casa vazia");
-      } else {
-        const pecaCor = casa.includes("B") ? "preta" : "branca";
-        // Tem peça na casa
-        if (pecaCor === reiCor) {
-          console.log("Casa com peça da mesma cor");
-        }
-        else{
-          checkmate = true;
-        }
-        break; // Bloqueia a partir daqui
-      }
-
-    linha += deltaLinha;
-    coluna += deltaColuna;
-  }
-});
-};
-
-// (TECNICAMENTE O REI NAO PODE DAR CHEQUE, MAS SEU MOVIMENTO PODE GERAR UM CHEQUE DESCOBERTO. ESSA FUNCAO SERA DEIXADA PARA O FUTURO)
-// checkByRei = (destino, cor) => {}
 
 // ---------------------- //
 // FUNÇÃO: XEQUE-MATE
 // ---------------------- //
 
+checkTest = (origem, destino, cor, tipo) =>{
+  if (tipo === "peao") {
+    checkByPeao(destino, cor);
+  } else if (tipo == "cavalo") {
+    checkByCavalo(destino, cor);
+  } else if (tipo == "torre") {
+    checkByTorre(destino, cor);
+  } else if (tipo == "bispo") {
+    checkByBispo(destino, cor);
+  } else if (tipo == "rainha") {
+    checkByRainha(origem, destino, cor)
+  } else if (tipo == "rei") {
+    checkByRei(destino, cor);
+  }
+}
+
+
 // ---------------------- //
 // FUNÇÃO: MOVIMENTAR PEÇA
 // ---------------------- //
-
+let pecaR;
 // Função que move a peça no DOM e atualiza os estados
 const casaMove = () => {
+
+  
   let peca = document.getElementById(selectP); // Obtém elemento da peça
   let casa = document.querySelector(`[data-pos="${selectC}"]`); // Obtém a casa destino
   let casaO = document.querySelector(`[data-pos="${selectO}"]`); // Obtém a casa origem
@@ -881,6 +897,10 @@ const casaMove = () => {
     const [linhaD, colD] = destino.split(",").map(Number); // Destino
     const destinoPeca = tabuleiro[linhaD][colD];
     console.log(destinoPeca);
+    console.log("Origem ", origem);
+    console.log("Destino ", destino);
+    console.log("Peca ", peca);
+    console.log("Tipo ", tipo);
 
     console.log("Casa origem: ", corCasasO);
     console.log("Casa destino: ", corCasasD);
@@ -907,6 +927,7 @@ const casaMove = () => {
       podeMover = true;
     }
 
+
     // Se o movimento não for válido, exibe mensagem e para
     if (!podeMover) {
       console.log("Movimento inválido para", tipo);
@@ -914,9 +935,25 @@ const casaMove = () => {
     }
 
 
-    reiVulneravel(cor);
+    if(check){
+    
+    copiaTabuleiro = tabuleiro.map(linha => [...linha]);
+    atualizarEstadoTabuleiro(copiaTabuleiro, origem, destino);
+    console.log(copiaTabuleiro);  
 
-    if(!checkmate){
+    const sobCheck = movimentoGeraCheck(pecaR, cor)
+  
+
+    if(sobCheck){
+      console.log("MOVIMENTO INVALIDO(REI SOB ATAQUE)");
+    }else{
+      console.log(copiaTabuleiro)
+     
+    }
+    
+    }
+
+    if(!check){
 
       
     // --- CAPTURA ---
@@ -929,7 +966,9 @@ const casaMove = () => {
       somMove.play();
     }
 
-    atualizarEstadoTabuleiro(origem, destino); // Atualiza o tabuleiro
+    
+
+    atualizarEstadoTabuleiro(tabuleiro, origem, destino); // Atualiza o tabuleiro
     removerDestacar();
     peca.parentNode.removeChild(peca); // Remove peça da casa atual
     casa.appendChild(peca); // Adiciona peça na nova casa
@@ -940,8 +979,11 @@ const casaMove = () => {
     selecionada = false;
     selectP = null;
     selectC = null;
+    check = false;
 
-    check(destino, tipo, cor);
+    checkTest(origem, destino, cor, tipo);
+
+    
   }
   }
 };
