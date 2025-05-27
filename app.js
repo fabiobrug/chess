@@ -2,7 +2,7 @@
 // ESTADOS DO TABULEIRO
 // ---------------------- //
 // Estado inicial do tabuleiro, representado como uma matriz 8x8
-const tabuleiro = [
+let tabuleiro = [
   ["rB", "nB", "bB", "qB", "kB", "bB", "nB", "rB"], // Linha 0: peças pretas principais
   ["pB", "pB", "pB", "pB", "pB", "pB", "pB", "pB"], // Linha 1: peões pretos
   ["", "", "", "", "", "", "", ""], // Linha 2: casas vazias
@@ -74,6 +74,8 @@ let start = false;
 let turno = 0;
 
 let finalGame = document.getElementById("whiteWins");
+
+let checkmate;
 
 // ---------------------- //
 // SELEÇÃO DE PEÇAS
@@ -446,10 +448,6 @@ function movimentoPeao(origem, destino, cor) {
   console.log("Tentando capturar peão:", { origem, destino, cor });
   console.log("destinoPeca, capturarDiagonal:", destinoPeca, capturarDiagonal);
 
-  if(reiVulneravel()){
-    return false
-  }
-
   return avancarUma || avancarDuas || capturarDiagonal; // Retorna verdadeiro se qualquer um for válido
 }
 
@@ -669,11 +667,11 @@ checkByPeao = (destino, cor) => {
 
     if (alvo !== "" && alvo !== undefined) {
       if (alvo === "kB") {
-         console.log("PEAO FAZ XEQUE");
+        console.log("PEAO FAZ XEQUE");
       }
     }
   });
-}
+};
 
 checkByCavalo = (destino, cor) => {
   const [linhaO, colO] = destino.split(",").map(Number);
@@ -694,14 +692,13 @@ checkByCavalo = (destino, cor) => {
 
     if (linha >= 0 && linha <= 7 && coluna >= 0 && coluna <= 7) {
       const casa = tabuleiro[linha][coluna];
-      casa.includes("B") ? "preta" : "branca"
-       if (casa === "kB") {
+      casa.includes("B") ? "preta" : "branca";
+      if (casa === "kB") {
         console.log("CAVALO FAZ XEQUE");
       }
-     
     }
   });
-}
+};
 
 checkByTorre = (destino, cor) => {
   const [linhaO, colO] = destino.split(",").map(Number);
@@ -734,10 +731,10 @@ checkByTorre = (destino, cor) => {
       coluna += deltaColuna;
     }
   });
-}
+};
 
 checkByBispo = (destino, cor) => {
-const [linhaO, colO] = destino.split(",").map(Number);
+  const [linhaO, colO] = destino.split(",").map(Number);
   const direcoes = [
     [1, 1], // diagonal baixo-direita
     [1, -1], // diagonal baixo-esquerda
@@ -767,7 +764,7 @@ const [linhaO, colO] = destino.split(",").map(Number);
       coluna += deltaColuna;
     }
   });
-}
+};
 
 checkByRainha = (destino, cor) => {
   const [linhaO, colO] = destino.split(",").map(Number);
@@ -789,7 +786,6 @@ checkByRainha = (destino, cor) => {
     while (linha >= 0 && linha <= 7 && coluna >= 0 && coluna <= 7) {
       const casa = tabuleiro[linha][coluna];
 
-      console.log(casa);
       if (casa === "kB") {
         console.log("RAINHA FAZ XEQUE");
       }
@@ -806,12 +802,15 @@ checkByRainha = (destino, cor) => {
   });
 };
 
-reiVulneravel = () => {
-  let rei = getElementById("rei-preta");
-  let reiPos = rei.parentNode.getAttribute("data-pos"); 
+reiVulneravel = (cor) => {
+  let rei = document.getElementById("rei-preta");
+  let reiCor = rei.classList.contains("peca-branca") ? "branca" : "preta";
+  let reiPos = rei.parentNode.getAttribute("data-pos");
   const [linhaO, colO] = reiPos.split(",").map(Number);
+  console.log(cor)
+  console.log(reiCor)
 
-   const direcoes = [
+  const direcoes1 = [
     [1, 0], // baixo
     [-1, 0], // cima
     [0, 1], // direita
@@ -820,41 +819,35 @@ reiVulneravel = () => {
     [1, -1], // diagonal baixo-esquerda
     [-1, 1], // diagonal cima-direita
     [-1, -1], // diagonal cima-esquerda
-
-    //cavalo:
-    [-2, -1],
-    [-2, 1],
-    [-1, -2],
-    [-1, 2],
-    [1, -2],
-    [1, 2],
-    [2, -1],
-    [2, 1],
   ];
 
-  direcoes.forEach(([deltaLinha, deltaColuna]) => {
-    let linha = linhaO + deltaLinha;
-    let coluna = colO + deltaColuna;
+  direcoes1.forEach(([deltaLinha, deltaColuna]) => {
+  let linha = linhaO + deltaLinha;
+  let coluna = colO + deltaColuna;
 
-    while (linha >= 0 && linha <= 7 && coluna >= 0 && coluna <= 7) {
-      const casa = tabuleiro[linha][coluna];
+  while (linha >= 0 && linha <= 7 && coluna >= 0 && coluna <= 7) {
+    const casa = tabuleiro[linha][coluna];
 
-
-      const pecaCor = casa.includes("B") ? "preta" : "branca";
-       if (pecaCor !== cor) {
-          break;
+ 
+      if (casa === "") {
+        console.log("Casa vazia");
+      } else {
+        const pecaCor = casa.includes("B") ? "preta" : "branca";
+        // Tem peça na casa
+        if (pecaCor === reiCor) {
+          console.log("Casa com peça da mesma cor");
         }
-        //____________________________________________________________
-        //rei esta sob ataque!
+        else{
+          checkmate = true;
+        }
+        break; // Bloqueia a partir daqui
+      }
 
-
-      linha += deltaLinha;
-      coluna += deltaColuna;
-    }
-  });
-
-
-}
+    linha += deltaLinha;
+    coluna += deltaColuna;
+  }
+});
+};
 
 // (TECNICAMENTE O REI NAO PODE DAR CHEQUE, MAS SEU MOVIMENTO PODE GERAR UM CHEQUE DESCOBERTO. ESSA FUNCAO SERA DEIXADA PARA O FUTURO)
 // checkByRei = (destino, cor) => {}
@@ -862,22 +855,6 @@ reiVulneravel = () => {
 // ---------------------- //
 // FUNÇÃO: XEQUE-MATE
 // ---------------------- //
-
-checkmate = (origem, tipo, cor) => {
-  if (tipo === "peao") {
-    checkMateByPeao(origem, cor);
-  } else if (tipo == "cavalo") {
-    checkMateByCavalo(origem, cor);
-  } else if (tipo == "torre") {
-    checkMateByTorre(origem, cor);
-  } else if (tipo == "bispo") {
-    checkMateByBispo(origem, cor);
-  } else if (tipo == "rainha") {
-    checkMateByRainha(origem, cor);
-  } else if (tipo == "rei") {
-    checkMateByRei(origem, cor);
-  }
-};
 
 // ---------------------- //
 // FUNÇÃO: MOVIMENTAR PEÇA
@@ -936,6 +913,12 @@ const casaMove = () => {
       return;
     }
 
+
+    reiVulneravel(cor);
+
+    if(!checkmate){
+
+      
     // --- CAPTURA ---
     const pecaCapturada = casa.querySelector(".peca-preta, .peca-branca");
     if (pecaCapturada) {
@@ -959,14 +942,7 @@ const casaMove = () => {
     selectC = null;
 
     check(destino, tipo, cor);
-
-    if (destinoPeca == "kB") {
-      botaoStart.style.display = "none";
-      timerElement.style.display = "none";
-      timerElement2.style.display = "none";
-      finalGame.classList.add("ativo");
-      casaSelect.style.backgroundColor = "rgba(0,0,0,0.5)";
-    }
+  }
   }
 };
 
