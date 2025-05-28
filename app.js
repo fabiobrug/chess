@@ -869,6 +869,12 @@ checkTest = (origem, destino, cor, tipo) =>{
   }
 }
 
+reiVulneravel = () => {
+  let rei = document.querySelectorAll("[data-peca='rei']");
+  const cor = rei.classList.contains("casas-claras") ? "branca" : "preta"; 
+  console.log(cor)
+}
+
 
 // ---------------------- //
 // FUNÇÃO: MOVIMENTAR PEÇA
@@ -941,7 +947,7 @@ const casaMove = () => {
     atualizarEstadoTabuleiro(copiaTabuleiro, origem, destino);
     console.log(copiaTabuleiro);  
 
-    const sobCheck = movimentoGeraCheck(pecaR, cor)
+    const sobCheck = reiVulneravel(pecaR, cor)
   
 
     if(sobCheck){
@@ -954,6 +960,19 @@ const casaMove = () => {
     }
 
     if(!check){
+
+    copiaTabuleiro = tabuleiro.map(linha => [...linha]);
+    atualizarEstadoTabuleiro(copiaTabuleiro, origem, destino);
+    console.log(copiaTabuleiro);  
+
+    const sobCheck = movimentoGeraCheck(pecaR, cor)
+  
+console.log(pecaR);  
+    if(sobCheck){
+      console.log("MOVIMENTO INVALIDO(REI FICA SOB ATAQUE)");
+    }else{
+      console.log(copiaTabuleiro)
+    }
 
       
     // --- CAPTURA ---
