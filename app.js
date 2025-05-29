@@ -81,6 +81,8 @@ let checkmate;
 
 let check = false;
 
+let checkMove = false;
+
 // ---------------------- //
 // SELEÇÃO DE PEÇAS
 // ---------------------- //
@@ -869,12 +871,246 @@ checkTest = (origem, destino, cor, tipo) =>{
   }
 }
 
-reiVulneravel = () => {
-  let rei = document.querySelectorAll("[data-peca='rei']");
-  const cor = rei.classList.contains("casas-claras") ? "branca" : "preta"; 
-  console.log(cor)
+reiVulneravel = (posicaoRei = null) => {
+ let origem;
+
+  if (posicaoRei) {
+    origem = posicaoRei;
+  } else {
+    let rei = document.getElementById("rei-preta");
+    origem = rei.parentNode.getAttribute("data-pos");
+  }
+
+  
+  const [linhaO, colO] = origem.split(",").map(Number);
+
+  checkMove = false;
+  const direcoes = [
+    [1, 0], // baixo
+    [-1, 0], // cima
+    [0, 1], // direita
+    [0, -1], // esquerda
+    [1, 1], // diagonal baixo-direita
+    [1, -1], // diagonal baixo-esquerda
+    [-1, 1], // diagonal cima-direita
+    [-1, -1], // diagonal cima-esquerda
+  ];
+
+  direcoes.forEach(([deltaLinha, deltaColuna]) => {
+    let linha = linhaO + deltaLinha;
+    let coluna = colO + deltaColuna;
+
+    while (linha >= 0 && linha <= 7 && coluna >= 0 && coluna <= 7) {
+      const casa = copiaTabuleiro[linha][coluna];
+
+    if(casa === ""){
+      linha += deltaLinha;
+      coluna += deltaColuna;
+      continue
+    }
+
+    if (casa === "qW") {
+        checkMove = true;
+      }
+
+        if (
+        casa === "rW" &&
+        (deltaLinha === 0 || deltaColuna === 0) // linha ou coluna
+      ) {
+        checkMove = true;
+      }
+
+      // Verifica bispo (movimento diagonal)
+      if (
+        casa === "bW" &&
+        Math.abs(deltaLinha) === Math.abs(deltaColuna) // diagonal
+      ) {
+        checkMove = true;
+      }
+      
+      break;
+    }
+  });
+
+    const movimentosCavalo = [
+    [-2, -1], [-2, 1],
+    [-1, -2], [-1, 2],
+    [1, -2],  [1, 2],
+    [2, -1],  [2, 1],
+  ];
+
+  movimentosCavalo.forEach(([deltaLinha, deltaColuna]) => {
+    const linha = linhaO + deltaLinha;
+    const coluna = colO + deltaColuna;
+
+    if (linha >= 0 && linha <= 7 && coluna >= 0 && coluna <= 7) {
+      const casa = copiaTabuleiro[linha][coluna];
+      if (casa === "nW") {
+        checkMove = true;
+      }
+    }
+  });
+
+  const ataquesPeao = [
+    [-1, -1],
+    [-1, 1],
+  ];
+
+  ataquesPeao.forEach(([deltaLinha, deltaColuna]) => {
+    const linha = linhaO + deltaLinha;
+    const coluna = colO + deltaColuna;
+
+    if (linha >= 0 && linha <= 7 && coluna >= 0 && coluna <= 7) {
+      const casa = copiaTabuleiro[linha][coluna];
+      if (casa === "pW") {
+        checkMove = true;
+      }
+    }
+  });
+
+  const direcoesRei = [
+  [1, 0], [-1, 0], [0, 1], [0, -1],
+  [1, 1], [1, -1], [-1, 1], [-1, -1],
+];
+
+direcoesRei.forEach(([deltaLinha, deltaColuna]) => {
+  const linha = linhaO + deltaLinha;
+  const coluna = colO + deltaColuna;
+
+  if (linha >= 0 && linha <= 7 && coluna >= 0 && coluna <= 7) {
+    const casa = copiaTabuleiro[linha][coluna];
+    if (casa === "kW") {
+      checkMove = true;
+    }
+  }
+});
+
+
+  return checkMove;
+
+
 }
 
+
+reiVulneravelBranco = (posicaoRei = null) => {
+let origem;
+
+  if (posicaoRei) {
+    origem = posicaoRei;
+  } else {
+    let rei = document.getElementById("rei-branca");
+    origem = rei.parentNode.getAttribute("data-pos");
+  }
+
+const [linhaO, colO] = origem.split(",").map(Number);
+
+  checkMove = false;
+  const direcoes = [
+    [1, 0], // baixo
+    [-1, 0], // cima
+    [0, 1], // direita
+    [0, -1], // esquerda
+    [1, 1], // diagonal baixo-direita
+    [1, -1], // diagonal baixo-esquerda
+    [-1, 1], // diagonal cima-direita
+    [-1, -1], // diagonal cima-esquerda
+  ];
+
+  direcoes.forEach(([deltaLinha, deltaColuna]) => {
+    let linha = linhaO + deltaLinha;
+    let coluna = colO + deltaColuna;
+
+    while (linha >= 0 && linha <= 7 && coluna >= 0 && coluna <= 7) {
+      const casa = copiaTabuleiro[linha][coluna];
+
+    if(casa === ""){
+      linha += deltaLinha;
+      coluna += deltaColuna;
+      continue
+    }
+
+    if (casa === "qB") {
+        // Encontrou o rei preto na direção
+        checkMove = true;
+      }
+
+        if (
+        casa === "rB" &&
+        (deltaLinha === 0 || deltaColuna === 0) // linha ou coluna
+      ) {
+        checkMove = true;
+      }
+
+      // Verifica bispo (movimento diagonal)
+      if (
+        casa === "bB" &&
+        Math.abs(deltaLinha) === Math.abs(deltaColuna) // diagonal
+      ) {
+        checkMove = true;
+      }
+      
+      break;
+    }
+  });
+
+    const movimentosCavalo = [
+    [-2, -1], [-2, 1],
+    [-1, -2], [-1, 2],
+    [1, -2],  [1, 2],
+    [2, -1],  [2, 1],
+  ];
+
+  movimentosCavalo.forEach(([deltaLinha, deltaColuna]) => {
+    const linha = linhaO + deltaLinha;
+    const coluna = colO + deltaColuna;
+
+    if (linha >= 0 && linha <= 7 && coluna >= 0 && coluna <= 7) {
+      const casa = copiaTabuleiro[linha][coluna];
+      if (casa === "nB") {
+        checkMove = true;
+      }
+    }
+  });
+
+  const ataquesPeao = [
+    [-1, -1],
+    [-1, 1],
+  ];
+
+  ataquesPeao.forEach(([deltaLinha, deltaColuna]) => {
+    const linha = linhaO + deltaLinha;
+    const coluna = colO + deltaColuna;
+
+    if (linha >= 0 && linha <= 7 && coluna >= 0 && coluna <= 7) {
+      const casa = copiaTabuleiro[linha][coluna];
+      if (casa === "pB") {
+        checkMove = true;
+      }
+    }
+  });
+
+  const direcoesRei = [
+  [1, 0], [-1, 0], [0, 1], [0, -1],
+  [1, 1], [1, -1], [-1, 1], [-1, -1],
+];
+
+direcoesRei.forEach(([deltaLinha, deltaColuna]) => {
+  const linha = linhaO + deltaLinha;
+  const coluna = colO + deltaColuna;
+
+  if (linha >= 0 && linha <= 7 && coluna >= 0 && coluna <= 7) {
+    const casa = copiaTabuleiro[linha][coluna];
+    if (casa === "kB") {
+      checkMove = true;
+    }
+  }
+});
+
+
+  return checkMove;
+
+
+}
 
 // ---------------------- //
 // FUNÇÃO: MOVIMENTAR PEÇA
@@ -941,40 +1177,56 @@ const casaMove = () => {
     }
 
 
-    if(check){
+  if(turno % 2 != 0) {
+  copiaTabuleiro = tabuleiro.map(linha => [...linha]);
+  atualizarEstadoTabuleiro(copiaTabuleiro, origem, destino);
+  console.log(copiaTabuleiro);  
+
+  let podeCheck;
+  if(tipo === "rei" && cor === "preta"){
+    podeCheck = reiVulneravel(destino);
+  } else {
+    podeCheck = reiVulneravel();
+  }
+
+  if(podeCheck){
+    console.log("MOVIMENTO INVALIDO (REI FICA SOB ATAQUE)");
+    return;
+  } else {
+    console.log("Movimento OK");
+    console.log(copiaTabuleiro);
+  }
+}
+
+  if(turno % 2 == 0) {
+  copiaTabuleiro = tabuleiro.map(linha => [...linha]);
+  atualizarEstadoTabuleiro(copiaTabuleiro, origem, destino);
+  console.log(copiaTabuleiro);  
+
+  let podeCheck;
+  if(tipo === "rei" && cor === "branca"){
+    podeCheck = reiVulneravelBranco(destino);
+  } else {
+    podeCheck = reiVulneravelBranco();
+  }
+
+  if(podeCheck){
+    console.log("MOVIMENTO INVALIDO (REI FICA SOB ATAQUE)");
+    return;
+  } else {
+    console.log("Movimento OK");
+    console.log(copiaTabuleiro);
+  }
+}
+
+
+
+    if(!checkMove){
+
+
     
-    copiaTabuleiro = tabuleiro.map(linha => [...linha]);
-    atualizarEstadoTabuleiro(copiaTabuleiro, origem, destino);
-    console.log(copiaTabuleiro);  
 
-    const sobCheck = reiVulneravel(pecaR, cor)
   
-
-    if(sobCheck){
-      console.log("MOVIMENTO INVALIDO(REI SOB ATAQUE)");
-    }else{
-      console.log(copiaTabuleiro)
-     
-    }
-    
-    }
-
-    if(!check){
-
-    copiaTabuleiro = tabuleiro.map(linha => [...linha]);
-    atualizarEstadoTabuleiro(copiaTabuleiro, origem, destino);
-    console.log(copiaTabuleiro);  
-
-    const sobCheck = movimentoGeraCheck(pecaR, cor)
-  
-console.log(pecaR);  
-    if(sobCheck){
-      console.log("MOVIMENTO INVALIDO(REI FICA SOB ATAQUE)");
-    }else{
-      console.log(copiaTabuleiro)
-    }
-
-      
     // --- CAPTURA ---
     const pecaCapturada = casa.querySelector(".peca-preta, .peca-branca");
     if (pecaCapturada) {
@@ -999,13 +1251,11 @@ console.log(pecaR);
     selectP = null;
     selectC = null;
     check = false;
+    checkMove = false;
 
-    checkTest(origem, destino, cor, tipo);
-
-    
   }
   }
-};
+}
 
 // ---------------------- //
 // FUNÇÃO DE INICIAR JOGO
