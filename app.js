@@ -77,11 +77,25 @@ let turno = 0;
 
 let finalGame = document.getElementById("whiteWins");
 
+let finalGame2 = document.getElementById("blackWins");
+
 let check = false;
 
 let emCheck = null;
 
 let checkMove = false;
+
+let peaoImpede;
+
+let cavaloImpede;
+
+let torreImpede;
+
+let bispoImpede;
+
+let damaImpede;
+
+let reiImpede;
 
 // ---------------------- //
 // SELEÇÃO DE PEÇAS
@@ -141,6 +155,15 @@ pecaSelect.forEach((peca) => {
     }
   });
 });
+
+function desativarSelecao() {
+  pecaSelect.forEach((peca) => peca.classList.remove("selecionada"));
+  removerDestacar();
+  selecionada = false;
+  selectP = null;
+  selectO = null;
+}
+
 
 // ---------------------- //
 // ESCOLHEU UMA PEÇA (MUDA A COR DAS CASAS QUE TEM POSSIVEIS MOVIMENTOS VALIDOSAS)
@@ -334,37 +357,64 @@ mudaRainha = (origem, cor) => {
 
 mudaRei = (origem, cor) => {
   const [linhaO, colO] = origem.split(",").map(Number);
+
   const direcoes = [
-    [1, 0], // baixo
-    [-1, 0], // cima
-    [0, 1], // direita
-    [0, -1], // esquerda
-    [1, 1], // diagonal baixo-direita
-    [1, -1], // diagonal baixo-esquerda
-    [-1, 1], // diagonal cima-direita
-    [-1, -1], // diagonal cima-esquerda
+    [1, 0], [-1, 0], [0, 1], [0, -1],
+    [1, 1], [1, -1], [-1, 1], [-1, -1],
   ];
 
+  // Movimentos normais do rei
   direcoes.forEach(([deltaLinha, deltaColuna]) => {
-    let linha = linhaO + deltaLinha;
-    let coluna = colO + deltaColuna;
+    const linha = linhaO + deltaLinha;
+    const coluna = colO + deltaColuna;
 
     if (linha >= 0 && linha <= 7 && coluna >= 0 && coluna <= 7) {
       const casa = tabuleiro[linha][coluna];
 
       if (casa === "") {
-        destacarCasa(linha, coluna); // Casa livre
+        destacarCasa(linha, coluna);
       } else {
         const pecaCor = casa.includes("B") ? "preta" : "branca";
-        // Tem peça na casa
         if (pecaCor !== cor) {
           destacarCasa(linha, coluna); // Pode capturar
         }
-        // Bloqueia a partir daqui
       }
     }
   });
+
+  // Verificar roque
+  const linhaBase = (cor === "preta") ? 0 : 7;
+
+  if (linhaO === linhaBase && colO === 4) { // O rei está na casa inicial
+    // Roque pequeno (lado do rei)
+    const torrePequena = tabuleiro[linhaBase][7];
+    const caminhoPequenoLivre = 
+      tabuleiro[linhaBase][5] === "" && 
+      tabuleiro[linhaBase][6] === "";
+
+    if (
+      torrePequena === (cor === "preta" ? "rB" : "rW") &&
+      caminhoPequenoLivre
+    ) {
+      destacarCasa(linhaBase, 6); // Casa destino do rei no roque pequeno
+    }
+
+    // Roque grande (lado da dama)
+    const torreGrande = tabuleiro[linhaBase][0];
+    const caminhoGrandeLivre = 
+      tabuleiro[linhaBase][1] === "" && 
+      tabuleiro[linhaBase][2] === "" && 
+      tabuleiro[linhaBase][3] === "";
+
+    if (
+      torreGrande === (cor === "preta" ? "rB" : "rW") &&
+      caminhoGrandeLivre
+    ) {
+      destacarCasa(linhaBase, 2); // Casa destino do rei no roque grande
+    }
+  }
 };
+
 
 function destacarCasa(linha, coluna) {
   const elemento = document.querySelector(`[data-pos="${linha},${coluna}"]`);
@@ -597,41 +647,75 @@ function movimentoRainha(origem, destino, cor) {
 
 // Verifica se o movimento da rainha é válido
 function movimentoRei(origem, destino, cor) {
-  const [linhaO, colO] = origem.split(",").map(Number); // Origem
-  const [linhaD, colD] = destino.split(",").map(Number); // Destino
+  const [linhaO, colO] = origem.split(",").map(Number);
+  const [linhaD, colD] = destino.split(",").map(Number);
 
-  // Movimento
+  const deltaLinha = Math.abs(linhaO - linhaD);
+  const deltaColuna = Math.abs(colO - colD);
+
+  const linhaBase = (cor === "preta") ? 0 : 7;
+  const reiNaBase = linhaO === linhaBase && linhaD === linhaBase;
+
   const avancar =
-    (Math.abs(linhaO - linhaD) === 1 && Math.abs(colO - colD) === 1) ||
-    (Math.abs(linhaO - linhaD) === 1 && Math.abs(colO - colD) === 0) ||
-    (Math.abs(linhaO - linhaD) === 0 &&
-      Math.abs(colO - colD) === 1 &&
-      caminhoLivre(linhaO, colO, linhaD, colD)); // Caminho sem bloqueios
+    (deltaLinha <= 1 && deltaColuna <= 1 && !(deltaLinha === 0 && deltaColuna === 0));
 
-  function caminhoLivre(linhaO, colO, linhaD, colD) {
-    // Calcula a direção do movimento nas linhas e colunas.
-    // Pode ser -1 (subindo/esquerda), 0 (mesma linha ou coluna) ou 1 (descendo/direita).
-    const deltaLinha = Math.sign(linhaD - linhaO);
-    const deltaColuna = Math.sign(colD - colO);
+  let roque = false;
 
-    // Inicializa linha e coluna, começando na primeira casa depois da origem.
-    let linha = linhaO + deltaLinha;
-    let coluna = colO + deltaColuna;
+  // Roque
+  if (reiNaBase && deltaLinha === 0 && deltaColuna === 2) {
+    // Roque pequeno
+    if (colD === 6) {
+      const torre = tabuleiro[linhaBase][7];
+      const caminhoLivre =
+        tabuleiro[linhaBase][5] === "" &&
+        tabuleiro[linhaBase][6] === "";
 
-    // Loop até chegar na casa de destino (sem incluir ela)
-    while (linha !== linhaD || coluna !== colD) {
-      // Verifica se há alguma peça na casa atual do caminho
-      if (tabuleiro[linha][coluna] !== "") {
-        return false; // Caminho bloqueado
+      if (torre === (cor === "preta" ? "rB" : "rW") && caminhoLivre) {
+        // Atualiza tabuleiro lógico
+        tabuleiro[linhaBase][5] = torre;
+        tabuleiro[linhaBase][7] = "";
+
+        // Move no DOM
+        const torreId = cor === "preta" ? "torre-preta-2" : "torre-branca-2";
+        const novaCasa = document.querySelector(`[data-pos="${linhaBase},5"]`);
+        const pecaTorre = document.getElementById(torreId);
+
+        if (pecaTorre && novaCasa) {
+          novaCasa.appendChild(pecaTorre);
+        }
+
+        roque = true;
       }
-      linha += deltaLinha;
-      coluna += deltaColuna;
     }
 
-    return true; // Nenhuma peça no caminho, movimento permitido
+    // Roque grande
+    if (colD === 2) {
+      const torre = tabuleiro[linhaBase][0];
+      const caminhoLivre =
+        tabuleiro[linhaBase][1] === "" &&
+        tabuleiro[linhaBase][2] === "" &&
+        tabuleiro[linhaBase][3] === "";
+
+      if (torre === (cor === "preta" ? "rB" : "rW") && caminhoLivre) {
+        // Atualiza tabuleiro lógico
+        tabuleiro[linhaBase][3] = torre;
+        tabuleiro[linhaBase][0] = "";
+
+        // Move no DOM
+        const torreId = cor === "preta" ? "torre-preta-1" : "torre-branca-1";
+        const novaCasa = document.querySelector(`[data-pos="${linhaBase},3"]`);
+        const pecaTorre = document.getElementById(torreId);
+
+        if (pecaTorre && novaCasa) {
+          novaCasa.appendChild(pecaTorre);
+        }
+
+        roque = true;
+      }
+    }
   }
 
-  return avancar;
+  return avancar || roque;
 }
 
 // ---------------------- //
@@ -842,8 +926,6 @@ function reiVulneravel(posicaoRei = null) {
     let rei = document.getElementById("rei-preta");
     origem = rei.parentNode.getAttribute("data-pos");
   }
-
-  console.log(origem);
 
   const [linhaO, colO] = origem.split(",").map(Number);
 
@@ -1090,7 +1172,6 @@ function reiVulneravelBranco(posicaoRei = null) {
 
 function gerarMovimentosPeao(posicao, cor) {
   const [linha, coluna] = posicao.split(",").map(Number);
-  console.log([linha, coluna]);
   const movimentos = [];
 
   const direcao = cor === "B" ? 1 : -1; // Branco sobe, Preto desce
@@ -1142,7 +1223,7 @@ function gerarMovimentosPeao(posicao, cor) {
 
 function movimentoPeaoImpede(posicoesPeoes, cor) {
   let vulneravel;
-  let peaoImpede = false;
+  peaoImpede = false;
 
   for (const posicao of posicoesPeoes) {
     const movimentos = gerarMovimentosPeao(posicao, cor);
@@ -1167,9 +1248,9 @@ function movimentoPeaoImpede(posicoesPeoes, cor) {
         vulneravel = reiVulneravelBranco();
       }
 
-      console.log(
+     /* console.log(
         `Movendo peão de ${posicao} para ${destino}: rei vulnerável? ${vulneravel}`
-      );
+      );*/
 
       if (!vulneravel) {
         peaoImpede = true;
@@ -1220,7 +1301,7 @@ function gerarMovimentosCavalo(posicao) {
 }
 
 function movimentoCavaloImpede(posicoesCavalos, cor) {
-  let cavaloImpede = false;
+  cavaloImpede = false;
   let vulneravel;
 
   for (const posicao of posicoesCavalos) {
@@ -1244,9 +1325,9 @@ function movimentoCavaloImpede(posicoesCavalos, cor) {
       }
 
 
-      console.log(
+      /*console.log(
         `Movendo cavalo de ${posicao} para ${destino}: rei vulnerável? ${vulneravel}`
-      );
+      );*/
 
       if (!vulneravel) {
         cavaloImpede = true;
@@ -1271,39 +1352,41 @@ function movimentoCavaloImpede(posicoesCavalos, cor) {
 function gerarMovimentosTorre(posicao) {
   const [linha, coluna] = posicao.split(",").map(Number);
   const movimentos = [];
-
   const direcoes = [
-    [1, 0],
-    [-1, 0],
-    [0, 1],
-    [0, -1],
+    [-1, 0], [1, 0], // cima e baixo
+    [0, -1], [0, 1]  // esquerda e direita
   ];
 
-  for (const [dl, dc] of direcoes) {
-    let novaLinha = linha + dl;
-    let novaColuna = coluna + dc;
+  const peca = copiaTabuleiro[linha][coluna];
+  const cor = peca[0]; // 'B' ou 'P'
 
-    while (
-      novaLinha >= 0 &&
-      novaLinha < 8 &&
-      novaColuna >= 0 &&
-      novaColuna < 8
-    ) {
-      movimentos.push(`${novaLinha},${novaColuna}`);
+  for (const [dx, dy] of direcoes) {
+    let novaLinha = linha + dx;
+    let novaColuna = coluna + dy;
 
-      // Se encontrar uma peça, para
-      if (copiaTabuleiro[novaLinha][novaColuna] !== "") break;
+    while (novaLinha >= 0 && novaLinha < 8 && novaColuna >= 0 && novaColuna < 8) {
+      const destino = copiaTabuleiro[novaLinha][novaColuna];
 
-      novaLinha += dl;
-      novaColuna += dc;
+      if (destino === "") {
+        movimentos.push(`${novaLinha},${novaColuna}`);
+      } else {
+        if (destino[0] !== cor) {
+          movimentos.push(`${novaLinha},${novaColuna}`); // pode capturar
+        }
+        break; // encontrou uma peça, para nessa direção
+      }
+
+      novaLinha += dx;
+      novaColuna += dy;
     }
   }
 
   return movimentos;
 }
 
+
 function movimentoTorreImpede(posicoesTorres, cor) {
-  let torreImpede = false;
+  torreImpede = false;
   let vulneravel;
 
   for (const posicao of posicoesTorres) {
@@ -1327,9 +1410,9 @@ function movimentoTorreImpede(posicoesTorres, cor) {
       }
 
 
-      console.log(
+      /*console.log(
         `Movendo torre de ${posicao} para ${destino}: rei vulnerável? ${vulneravel}`
-      );
+      );*/
 
       if (!vulneravel) {
         torreImpede = true;
@@ -1354,38 +1437,41 @@ function movimentoTorreImpede(posicoesTorres, cor) {
 function gerarMovimentosBispo(posicao) {
   const [linha, coluna] = posicao.split(",").map(Number);
   const movimentos = [];
-
   const direcoes = [
-    [1, 1],
-    [1, -1],
-    [-1, 1],
-    [-1, -1],
+    [-1, -1], [-1, 1],
+    [1, -1], [1, 1]
   ];
 
-  for (const [dl, dc] of direcoes) {
-    let novaLinha = linha + dl;
-    let novaColuna = coluna + dc;
+  const peca = copiaTabuleiro[linha][coluna];
+  const cor = peca[0];
 
-    while (
-      novaLinha >= 0 &&
-      novaLinha < 8 &&
-      novaColuna >= 0 &&
-      novaColuna < 8
-    ) {
-      movimentos.push(`${novaLinha},${novaColuna}`);
+  for (const [dx, dy] of direcoes) {
+    let novaLinha = linha + dx;
+    let novaColuna = coluna + dy;
 
-      if (copiaTabuleiro[novaLinha][novaColuna] !== "") break;
+    while (novaLinha >= 0 && novaLinha < 8 && novaColuna >= 0 && novaColuna < 8) {
+      const destino = copiaTabuleiro[novaLinha][novaColuna];
 
-      novaLinha += dl;
-      novaColuna += dc;
+      if (destino === "") {
+        movimentos.push(`${novaLinha},${novaColuna}`);
+      } else {
+        if (destino[0] !== cor) {
+          movimentos.push(`${novaLinha},${novaColuna}`);
+        }
+        break;
+      }
+
+      novaLinha += dx;
+      novaColuna += dy;
     }
   }
 
   return movimentos;
 }
 
+
 function movimentoBispoImpede(posicoesBispos, cor) {
-  let bispoImpede = false;
+  bispoImpede = false;
   let vulneravel;
 
   for (const posicao of posicoesBispos) {
@@ -1408,9 +1494,9 @@ function movimentoBispoImpede(posicoesBispos, cor) {
         vulneravel = reiVulneravelBranco();
       }
 
-      console.log(
+      /*console.log(
         `Movendo bispo de ${posicao} para ${destino}: rei vulnerável? ${vulneravel}`
-      );
+      );*/
 
       if (!vulneravel) {
         bispoImpede = true;
@@ -1433,13 +1519,12 @@ function movimentoBispoImpede(posicoesBispos, cor) {
 }
 
 function gerarMovimentosDama(posicao) {
-  const movimentosTorre = gerarMovimentosTorre(posicao);
-  const movimentosBispo = gerarMovimentosBispo(posicao);
-  return movimentosTorre.concat(movimentosBispo);
+  return gerarMovimentosTorre(posicao).concat(gerarMovimentosBispo(posicao));
 }
 
+
 function movimentoDamaImpede(posicoesDamas, cor) {
-  let damaImpede = false;
+  damaImpede = false;
   let vulneravel;
 
   for (const posicao of posicoesDamas) {
@@ -1462,9 +1547,9 @@ function movimentoDamaImpede(posicoesDamas, cor) {
         vulneravel = reiVulneravelBranco();
       }
 
-      console.log(
+      /*console.log(
         `Movendo dama de ${posicao} para ${destino}: rei vulnerável? ${vulneravel}`
-      );
+      );*/
 
       if (!vulneravel) {
         damaImpede = true;
@@ -1487,46 +1572,47 @@ function movimentoDamaImpede(posicoesDamas, cor) {
 }
 
 function gerarMovimentosRei(posicao) {
-  console.log(posicao)
   const [linha, coluna] = posicao.split(",").map(Number);
   const movimentos = [];
 
-  // Todas as direções possíveis para o rei
+  const peca = copiaTabuleiro[linha][coluna];
+  const cor = peca[1];  // 'B' ou 'W'
+
   const direcoes = [
     [-1, -1], [-1, 0], [-1, 1],
     [0, -1],          [0, 1],
-    [1, -1],  [1, 0], [1, 1],
+    [1, -1],  [1, 0], [1, 1]
   ];
-
-  const peca = copiaTabuleiro[linha][coluna];
-  const cor = peca[0]; // 'B' ou 'P'
 
   for (const [dx, dy] of direcoes) {
     const novaLinha = linha + dx;
     const novaColuna = coluna + dy;
 
-    // Verifica se está dentro do tabuleiro
     if (novaLinha >= 0 && novaLinha < 8 && novaColuna >= 0 && novaColuna < 8) {
       const destino = copiaTabuleiro[novaLinha][novaColuna];
 
-      // Se a casa estiver vazia ou ocupada por peça adversária
-      if (destino === "" || destino[0] !== cor) {
+      const casaOcupadaPorAliado = destino !== "" && destino[1] === cor;
+
+      if (!casaOcupadaPorAliado) {
         movimentos.push(`${novaLinha},${novaColuna}`);
       }
     }
   }
 
+  console.log("Movimentos válidos do rei:", movimentos);
   return movimentos;
 }
 
 
 
+
 function movimentoReiImpede(posicaoRei, cor) {
-  let reiImpede = false;
+  reiImpede = true;
   let vulneravel;
   
   const movimentos = gerarMovimentosRei(posicaoRei);
 
+  console.log("Movimentos possíveis do rei:", movimentos);
   for (const destino of movimentos) {
     const [linhaOrig, colunaOrig] = posicaoRei.split(",").map(Number);
     const [linhaDest, colunaDest] = destino.split(",").map(Number);
@@ -1538,10 +1624,10 @@ function movimentoReiImpede(posicaoRei, cor) {
     copiaTabuleiro[linhaOrig][colunaOrig] = "";
 
       if (cor == "B") {
-        vulneravel = reiVulneravel();
+        vulneravel = reiVulneravel(destino);
       }
       if (cor == "W") {
-        vulneravel = reiVulneravelBranco();
+        vulneravel = reiVulneravelBranco(destino);
       }
 
     console.log(
@@ -1549,7 +1635,7 @@ function movimentoReiImpede(posicaoRei, cor) {
     );
 
     if (!vulneravel) {
-      reiImpede = true;
+      reiImpede = false;
       console.log(
         `O rei pode ir para ${destino} e sair do xeque.`
       );
@@ -1559,7 +1645,6 @@ function movimentoReiImpede(posicaoRei, cor) {
     copiaTabuleiro[linhaOrig][colunaOrig] = copiaTabuleiro[linhaDest][colunaDest];
     copiaTabuleiro[linhaDest][colunaDest] = pecaCapturada;
 
-    if (reiImpede) break;
   }
 
   return reiImpede;
@@ -1569,6 +1654,8 @@ function movimentoReiImpede(posicaoRei, cor) {
 
 checkmate = (cor) => {
   //cor = cor do rei que esta sofren cheque.
+
+let mate = true;
 
   const pecasDaCor = [];
 
@@ -1633,25 +1720,45 @@ console.log("Tipo:", tipoPeoes);
 console.log("Posições dos cavalos:", posicoesCavalos);
 console.log("Posições das torres:", posicoesTorres);
 console.log("Posições dos bispos:", posicoesBispos);
-console.log("Posição da rainha:", posicoesRainha);
-console.log("Posição da rainha:", posicoesRei);
-*/
+console.log("Posição da rainha:", posicoesRainha);*/
+
+
 
   for (const { tipo, posicao } of pecasDaCor) {
     if (nomesPecas[tipo] == "peao") {
       movimentoPeaoImpede([posicao], cor); // Ou posicoesPeoes se quiser passar todos
+      if(peaoImpede){
+        mate = false;
+      }
     } else if (nomesPecas[tipo] == "cavalo") {
       movimentoCavaloImpede([posicao], cor);
+      if(cavaloImpede){
+        mate = false;
+      }
     } else if (nomesPecas[tipo] == "torre") {
       movimentoTorreImpede([posicao], cor);
+      if(torreImpede){
+        mate = false;
+      }
     } else if (nomesPecas[tipo] == "bispo") {
       movimentoBispoImpede([posicao], cor);
+      if(bispoImpede){
+        mate = false;
+      }
     } else if (nomesPecas[tipo] == "rainha") {
       movimentoDamaImpede([posicao], cor);
+      if(damaImpede){
+        mate = false;
+      }
     } else if (nomesPecas[tipo] == "rei") {
       movimentoReiImpede(posicao, cor);
+      if(!reiImpede){
+        mate = false;
+      }
     }
   }
+
+  return mate;
 };
 
 // ---------------------- //
@@ -1788,11 +1895,23 @@ const casaMove = () => {
       console.log("Esta em check: ", emCheck);
 
       if (emCheck) {
-        //console.log(corReiAtacado)
-        checkmate(corReiAtacado);
-        if (mate) {
-          alert("fim");
+       let mate = checkmate(corReiAtacado);
+      
+       console.log(mate)
+       
+       //chequemate
+       if(mate){
+        botaoStart.style.display = "none"
+        clearInterval(intervalo)
+        clearInterval(intervalo2)
+        if(turno%2 != 0){
+        finalGame.classList.add("ativo")
         }
+        if(turno%2 == 0){
+        finalGame2.classList.add("ativo")
+        }
+        desativarSelecao();
+       }
       }
     }
   }
@@ -1913,7 +2032,7 @@ function restart() {
     botaoStart.style.backgroundColor = "";
     botaoStart.style.borderColor = "";
     setTimeout(() => {
-      window.location.reload();
+    window.location.reload();
     }, 400);
   });
 }
