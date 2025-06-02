@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Normal - Chess.fab.io</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+</head>
+<body>
+    <div class="container2">
+    <h1 class="texto">Chess.fab.<span class="io">io<span></h1>
+    <div id="temporizador2" class="tempo2"><h3>10:00</h3></div>
+    </div>
+   <div id="tabuleiro" class="tab">
+    <div data-peca="torre" data-pos="0,0" class="casas"><p id="torre-preta-1" class="peca-preta">♜</p></div>
+    <div data-pos="0,1" class="casas-claras"><p id="cavalo-preta-1" class="peca-preta">♞</p></div>
+    <div data-pos="0,2" class="casas"><p id="bispo-preta-1" class="peca-preta">♝</p></div>
+    <div data-pos="0,3" class="casas-claras"><p id="rainha-preta" class="peca-preta">♛</p></div>
+    <div data-pos="0,4" class="casas" data-peca="rei"><p id="rei-preta" class="peca-preta">♚</p></div>
+    <div data-pos="0,5" class="casas-claras"><p id="bispo-preta-2" class="peca-preta">♝</p></div>
+    <div data-pos="0,6" class="casas"><p id="cavalo-preta-2" class="peca-preta">♞</p></div>
+    <div data-peca="torre" data-pos="0,7" class="casas-claras"><p id="torre-preta-2" class="peca-preta">♜</p></div>
+    <div data-peca="peao" data-pos="1,0" class="casas-claras"><p id="peao-preta-1" class="peca-preta">♟</p></div>
+    <div data-peca="peao" data-pos="1,1" class="casas"><p id="peao-preta-2" class="peca-preta">♟</p></div>
+    <div data-peca="peao" data-pos="1,2" class="casas-claras"><p id="peao-preta-3" class="peca-preta">♟</p></div>
+    <div data-peca="peao" data-pos="1,3" class="casas"><p id="peao-preta-4" class="peca-preta">♟</p></div>
+    <div data-peca="peao" data-pos="1,4" class="casas-claras"><p id="peao-preta-5" class="peca-preta">♟</p></div>
+    <div data-peca="peao" data-pos="1,5" class="casas"><p id="peao-preta-6" class="peca-preta">♟</p></div>
+    <div data-peca="peao" data-pos="1,6" class="casas-claras"><p id="peao-preta-7" class="peca-preta">♟</p></div>
+    <div data-peca="peao" data-pos="1,7" class="casas"><p id="peao-preta-8" class="peca-preta">♟</p></div>
+    <div data-pos="2,0" class="casas"></div>
+    <div data-pos="2,1" class="casas-claras"></div>
+    <div data-pos="2,2" class="casas"></div>
+    <div data-pos="2,3" class="casas-claras"></div>
+    <div data-pos="2,4" class="casas"></div>
+    <div data-pos="2,5" class="casas-claras"></div>
+    <div data-pos="2,6" class="casas"></div>
+    <div data-pos="2,7" class="casas-claras"></div>
+    <div data-pos="3,0" class="casas-claras"></div>
+    <div data-pos="3,1" class="casas"></div>
+    <div data-pos="3,2" class="casas-claras"></div>
+    <div data-pos="3,3" class="casas"></div>
+    <div data-pos="3,4" class="casas-claras"></div>
+    <div data-pos="3,5" class="casas"></div>
+    <div data-pos="3,6" class="casas-claras"></div>
+    <div data-pos="3,7" class="casas"></div>
+    <div data-pos="4,0" class="casas"></div>
+    <div data-pos="4,1" class="casas-claras"></div>
+    <div data-pos="4,2" class="casas"></div>
+    <div data-pos="4,3" class="casas-claras"></div>
+    <div data-pos="4,4" class="casas"></div>
+    <div data-pos="4,5" class="casas-claras"></div>
+    <div data-pos="4,6" class="casas"></div>
+    <div data-pos="4,7" class="casas-claras"></div>
+    <div data-pos="5,0" class="casas-claras"></div>
+    <div data-pos="5,1" class="casas"></div>
+    <div data-pos="5,2" class="casas-claras"></div>
+    <div data-pos="5,3" class="casas"></div>
+    <div data-pos="5,4" class="casas-claras"></div>
+    <div data-pos="5,5" class="casas"></div>
+    <div data-pos="5,6" class="casas-claras"></div>
+    <div data-pos="5,7" class="casas"></div>
+    <div data-pos="6,0" class="casas"><p id="peao-branca-1" class="peca-branca">♙</p></div>
+    <div data-pos="6,1" class="casas-claras"><p id="peao-branca-2" class="peca-branca">♙</p></div>
+    <div data-pos="6,2" class="casas"><p id="peao-branca-3" class="peca-branca">♙</p></div>
+    <div data-pos="6,3" class="casas-claras"><p id="peao-branca-4" class="peca-branca">♙</p></div>
+    <div data-pos="6,4" class="casas"><p id="peao-branca-5" class="peca-branca">♙</p></div>
+    <div data-pos="6,5" class="casas-claras"><p id="peao-branca-6" class="peca-branca">♙</p></div>
+    <div data-pos="6,6" class="casas"><p id="peao-branca-7" class="peca-branca">♙</p></div>
+    <div data-pos="6,7" class="casas-claras"><p id="peao-branca-8" class="peca-branca">♙</p></div>
+    <div data-pos="7,0" class="casas-claras"><p id="torre-branca-1" class="peca-branca">♖</p></div>
+    <div data-pos="7,1" class="casas"><p id="cavalo-branca-1" class="peca-branca">♘</p></div>
+    <div data-pos="7,2" class="casas-claras"><p id="bispo-branca-1" class="peca-branca">♗</p></div>
+    <div data-pos="7,3" class="casas"><p id="rainha-branca" class="peca-branca">♕</p></div>
+    <div data-pos="7,4" class="casas-claras" data-peca="rei"><p id="rei-branca" class="peca-branca">♔</p></div>
+    <div data-pos="7,5" class="casas"><p id="bispo-branca-2" class="peca-branca">♗</p></div>
+    <div data-pos="7,6" class="casas-claras"><p id="cavalo-branca-2" class="peca-branca">♘</p></div>
+    <div data-pos="7,7" class="casas"><p id="torre-branca-2" class="peca-branca">♖</p></div>
+</div>
+    <div class="container">
+        <button class="btn-go" id="btn-start"><strong>Start</strong></button>
+        <button class="btn-back" id="btn-restart"><strong>Rematch</strong></button>
+        <div id="temporizador1" class="tempo"><h3>10:00</h3></div>
+    </div>
+    <div>
+        <div id="whiteWins" class="finalGame">
+            <div class="cima"><i class="fa fa-trophy fa-2x" aria-hidden="true"></i><h3>White Won!<br><span class="cong">Congratulations</span></h3>
+        </div>
+    </div>
+     <div id="blackWins" class="finalGame">
+            <div class="cima"><i class="fa fa-trophy fa-2x" aria-hidden="true"></i><h3>Black Won!<br><span class="cong">Congratulations</span></h3>
+        </div>
+    </div>
+
+
+    <script src="normal.js"></script>
+</body>
+</html>

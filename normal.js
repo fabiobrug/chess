@@ -43,6 +43,8 @@ let somStart = new Audio("sounds/mouse-click-sound-233951.mp3");
 // Cria objeto de áudio para som de erro
 let somErro = new Audio("sounds/error-10-206498.mp3");
 
+let somMate = new Audio("sounds/game-end.mp3")
+
 // ---------------------- //
 // ESTADOS DO JOGO
 // ---------------------- //
@@ -1901,6 +1903,7 @@ const casaMove = () => {
        
        //chequemate
        if(mate){
+        somMate.play();
         botaoStart.style.display = "none"
         clearInterval(intervalo)
         clearInterval(intervalo2)
@@ -1942,8 +1945,8 @@ let intervalo2 = null;
 let botaoStart = document.getElementById("btn-start");
 let botaoRestart = document.getElementById("btn-restart");
 
-let tempo = 300;
-let tempo2 = 300; // Tempo em segundos (5 minutos)
+let tempo = 600;
+let tempo2 = 600; // Tempo em segundos (5 minutos)
 const timerElement = document.getElementById("temporizador1");
 const timerElement2 = document.getElementById("temporizador2");
 
@@ -2024,7 +2027,7 @@ function restart() {
     const timer = document.getElementById("temporizador1");
     clearInterval(intervalo); // Para contagem do tempo
 
-    timer.innerHTML = "<h3>05:00</h3>"; // Reseta tempo na tela
+    timer.innerHTML = "<h3>10:00</h3>"; // Reseta tempo na tela
     ativo = false;
 
     // Reativa o botão de iniciar
