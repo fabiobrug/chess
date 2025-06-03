@@ -1929,6 +1929,7 @@ const casaMove = () => {
       turno++;
       if(turno%2 != 0){
         jogadaIA()
+        clearInterval(intervalo)
       }
       ativo++;
       iniciarTemporizador();
@@ -2015,7 +2016,6 @@ botaoStart.addEventListener("click", () => {
 });
 
 function iniciarTemporizador() {
-  if (ativo % 2 === 0) {
     clearInterval(intervalo2); // Garante que o outro pare
     intervalo = setInterval(() => {
       if (turno % 2 === 0) {
@@ -2029,6 +2029,7 @@ function iniciarTemporizador() {
           .toString()
           .padStart(2, "0")}:${segundos.toString().padStart(2, "0")}</h3>`;
         timerElement2.style.backgroundColor = "rgba(240, 217, 181, 0.4)";
+           
 
         if (tempo <= 0) {
           clearInterval(intervalo);
@@ -2036,7 +2037,8 @@ function iniciarTemporizador() {
         }
       }
     }, 1000);
-  } else {
+   
+  } /*else {
     clearInterval(intervalo); // Para o primeiro
     intervalo2 = setInterval(() => {
       if (turno % 2 !== 0) {
@@ -2058,7 +2060,7 @@ function iniciarTemporizador() {
       }
     }, 1000);
   }
-}
+}*/
 
 // ---------------------- //
 // FUNÇÃO DE REINICIAR JOGO

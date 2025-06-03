@@ -8,7 +8,7 @@ const valoresPecas = {
 };
 
 
-// 🏰 Função para detectar se o rei preto está em xeque após um movimento simulado
+// Função para detectar se o rei preto está em xeque após um movimento simulado
 function reiEmXeque(tabuleiroSimulado) {
     let reiPos = null;
 
@@ -135,7 +135,7 @@ function jogadaIA() {
         return;
     }
 
-    // 📊 Priorizar capturas de peças de maior valor
+    // Priorizar capturas de peças de maior valor
     const capturas = movimentosPossiveis
         .filter(m => m.captura)
         .sort((a, b) => b.valorCaptura - a.valorCaptura);
@@ -153,9 +153,11 @@ function jogadaIA() {
 
     console.log(`IA move de ${movimentoEscolhido.origem} para ${movimentoEscolhido.destino}`);
 
-    moverPeca(movimentoEscolhido.origem, movimentoEscolhido.destino);
-
-    turno++;
+    setTimeout(() => {
+     moverPeca(movimentoEscolhido.origem, movimentoEscolhido.destino);
+     turno++;
+    }, 1000)
+    
 }
 
 

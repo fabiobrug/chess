@@ -15,6 +15,7 @@ let tabuleiro = [
 //console.log(tabuleiro); // Exibe o estado inicial do tabuleiro no console
 
 let copiaTabuleiro;
+  
 
 /*
 -r : rook (torre)
@@ -106,7 +107,6 @@ let reiImpede;
 // Seleciona todas as peças do tabuleiro (classes de brancas e pretas)
 pecaSelect = document.querySelectorAll(".peca-branca, .peca-preta");
 origemPeca = document.querySelectorAll("[data-pos]");
-
 // Para cada peça encontrada, adiciona um evento de clique
 pecaSelect.forEach((peca) => {
   peca.addEventListener("click", (event) => {
@@ -1764,6 +1764,47 @@ console.log("Posição da rainha:", posicoesRainha);*/
   return mate;
 };
 
+
+
+function moverPeca(origem, destino) {
+    const [linhaO, colO] = origem.split(",").map(Number);
+    const [linhaD, colD] = destino.split(",").map(Number);
+
+    const peca = tabuleiro[linhaO][colO];
+
+    if (!peca) {
+        console.log("Não há peça na origem.");
+        return false;
+    }
+
+    // Atualiza o array do tabuleiro
+    tabuleiro[linhaD][colD] = peca;
+    tabuleiro[linhaO][colO] = "";
+
+    // Atualiza o HTML
+    const casaOrigem = document.querySelector(`[data-pos="${origem}"]`);
+    const casaDestino = document.querySelector(`[data-pos="${destino}"]`);
+    const pecaElemento = casaOrigem.querySelector(".peca-branca, .peca-preta");
+
+    if (pecaElemento) {
+        const pecaCapturada = casaDestino.querySelector(".peca-branca, .peca-preta");
+        if (pecaCapturada) {
+          somCaptura.play();
+          pecaCapturada.remove();
+        }
+        else{
+          somMove.play();
+        }
+
+        casaDestino.appendChild(pecaElemento);
+        
+    }
+
+    return true;
+}
+
+
+
 // ---------------------- //
 // FUNÇÃO: MOVIMENTAR PEÇA
 // ---------------------- //
@@ -1849,6 +1890,7 @@ const casaMove = () => {
     }
 
     if (turno % 2 == 0) {
+      
       copiaTabuleiro = tabuleiro.map((linha) => [...linha]);
       atualizarEstadoTabuleiro(copiaTabuleiro, origem, destino);
       //console.log(copiaTabuleiro);
@@ -1885,6 +1927,10 @@ const casaMove = () => {
       peca.parentNode.removeChild(peca); // Remove peça da casa atual
       casa.appendChild(peca); // Adiciona peça na nova casa
       turno++;
+      if(turno%2 != 0){
+        jogadaIA()
+        clearInterval(intervalo)
+      }
       ativo++;
       iniciarTemporizador();
       peca.classList.remove("selecionada"); // Remove marcação de selecionada
@@ -1947,7 +1993,7 @@ let botaoStart = document.getElementById("btn-start");
 let botaoRestart = document.getElementById("btn-restart");
 
 let tempo = 60;
-let tempo2 = 60; // Tempo em segundos (1 minuto)
+let tempo2 = 60; // Tempo em segundos (5 minutos)
 const timerElement = document.getElementById("temporizador1");
 const timerElement2 = document.getElementById("temporizador2");
 
@@ -1970,7 +2016,6 @@ botaoStart.addEventListener("click", () => {
 });
 
 function iniciarTemporizador() {
-  if (ativo % 2 === 0) {
     clearInterval(intervalo2); // Garante que o outro pare
     intervalo = setInterval(() => {
       if (turno % 2 === 0) {
@@ -1984,6 +2029,7 @@ function iniciarTemporizador() {
           .toString()
           .padStart(2, "0")}:${segundos.toString().padStart(2, "0")}</h3>`;
         timerElement2.style.backgroundColor = "rgba(240, 217, 181, 0.4)";
+           
 
         if (tempo <= 0) {
           clearInterval(intervalo);
@@ -1991,7 +2037,8 @@ function iniciarTemporizador() {
         }
       }
     }, 1000);
-  } else {
+   
+  } /*else {
     clearInterval(intervalo); // Para o primeiro
     intervalo2 = setInterval(() => {
       if (turno % 2 !== 0) {
@@ -2013,7 +2060,7 @@ function iniciarTemporizador() {
       }
     }, 1000);
   }
-}
+}*/
 
 // ---------------------- //
 // FUNÇÃO DE REINICIAR JOGO
