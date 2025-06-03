@@ -155,9 +155,8 @@ function jogadaIA() {
 
     setTimeout(() => {
      moverPeca(movimentoEscolhido.origem, movimentoEscolhido.destino);
-     turno++;
     }, 1000)
-    
+    turno++;
 }
 
 
