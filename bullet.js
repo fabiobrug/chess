@@ -106,6 +106,7 @@ let reiImpede;
 // Seleciona todas as peças do tabuleiro (classes de brancas e pretas)
 pecaSelect = document.querySelectorAll(".peca-branca, .peca-preta");
 origemPeca = document.querySelectorAll("[data-pos]");
+
 // Para cada peça encontrada, adiciona um evento de clique
 pecaSelect.forEach((peca) => {
   peca.addEventListener("click", (event) => {

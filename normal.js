@@ -15,6 +15,7 @@ let tabuleiro = [
 //console.log(tabuleiro); // Exibe o estado inicial do tabuleiro no console
 
 let copiaTabuleiro;
+  
 
 /*
 -r : rook (torre)
@@ -1763,6 +1764,47 @@ console.log("Posição da rainha:", posicoesRainha);*/
   return mate;
 };
 
+
+
+function moverPeca(origem, destino) {
+    const [linhaO, colO] = origem.split(",").map(Number);
+    const [linhaD, colD] = destino.split(",").map(Number);
+
+    const peca = tabuleiro[linhaO][colO];
+
+    if (!peca) {
+        console.log("Não há peça na origem.");
+        return false;
+    }
+
+    // Atualiza o array do tabuleiro
+    tabuleiro[linhaD][colD] = peca;
+    tabuleiro[linhaO][colO] = "";
+
+    // Atualiza o HTML
+    const casaOrigem = document.querySelector(`[data-pos="${origem}"]`);
+    const casaDestino = document.querySelector(`[data-pos="${destino}"]`);
+    const pecaElemento = casaOrigem.querySelector(".peca-branca, .peca-preta");
+
+    if (pecaElemento) {
+        const pecaCapturada = casaDestino.querySelector(".peca-branca, .peca-preta");
+        if (pecaCapturada) {
+          somCaptura.play();
+          pecaCapturada.remove();
+        }
+        else{
+          somMove.play();
+        }
+
+        casaDestino.appendChild(pecaElemento);
+        
+    }
+
+    return true;
+}
+
+
+
 // ---------------------- //
 // FUNÇÃO: MOVIMENTAR PEÇA
 // ---------------------- //
@@ -1848,6 +1890,7 @@ const casaMove = () => {
     }
 
     if (turno % 2 == 0) {
+      
       copiaTabuleiro = tabuleiro.map((linha) => [...linha]);
       atualizarEstadoTabuleiro(copiaTabuleiro, origem, destino);
       //console.log(copiaTabuleiro);
@@ -1884,6 +1927,9 @@ const casaMove = () => {
       peca.parentNode.removeChild(peca); // Remove peça da casa atual
       casa.appendChild(peca); // Adiciona peça na nova casa
       turno++;
+      if(turno%2 != 0){
+        jogadaIA()
+      }
       ativo++;
       iniciarTemporizador();
       peca.classList.remove("selecionada"); // Remove marcação de selecionada
