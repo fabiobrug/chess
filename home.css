@@ -156,6 +156,31 @@ a {
     border-bottom-style: solid; 
 }
 
+.local{
+    position: relative;
+    left: 3vw;
+    right: 3vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.5s ease;
+    color: #f0f0f0;
+    height: 10vh;
+    width: 42vw;
+    font-size: 2vw;
+    border-radius: 10px;
+    background-color: #989795;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: #494845;
+    border-bottom-width: 6px;
+    border-bottom-style: solid; 
+    margin-top: 10vh;
+}
+
+
 .bullet:hover{
     background-color: #ccaf65;  
     transform: scale(1.05);
@@ -170,6 +195,11 @@ a {
     background-color: #a1cf60;  
     transform: scale(1.05);
   }
+
+.local:hover{
+    background-color: #bbb9b6;  
+    transform: scale(1.05);
+}
 
 a{
     color: inherit;
