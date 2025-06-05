@@ -1,6 +1,14 @@
 {
-  "players": [
-    { "id": 1, "name": "Fabio", "score": 1500 },
-    { "id": 2, "name": "Bot", "score": 1200 }
+  "users": [
+    {
+      "id": 1,
+      "email": "fabio@email.com",
+      "senha": "123456"
+    },
+    {
+      "id": 2,
+      "email": "teste@email.com",
+      "senha": "senha123"
+    }
   ]
 }
