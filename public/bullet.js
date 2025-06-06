@@ -1997,7 +1997,7 @@ let tempo2 = 60; // Tempo em segundos (5 minutos)
 const timerElement = document.getElementById("temporizador1");
 const timerElement2 = document.getElementById("temporizador2");
 
-// Inicializa o botão de reinício
+// Inicializa o botão de reiniciar
 restart();
 
 // Evento de clique no botão de iniciar
