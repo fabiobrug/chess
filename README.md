@@ -16,7 +16,7 @@ Basic rule validation (e.g., legal piece movement)
 
 AI implemented (for now the user only can play as white)
 
-⚠️ Note: The login and user authentication system is not yet implemented. It is planned as a future update to enable player profiles and match tracking.
+⚠️ Note: The login and user authentication system is not yet implemented. It is planned as a future update to enable player profiles and match tracking.<br>
 ⚠️ Note: The checkmate system may occasionally fail when playing against AI.
 
 💻 Technologies used
