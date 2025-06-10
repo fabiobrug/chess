@@ -226,4 +226,45 @@ footer a:hover {
     color: #c5c5c4;
 }
 
+@media (max-width: 768px) {
+  h1 {
+    font-size: 13vw;
+    margin: 15vw auto;
+    
+  }
+
+  h2 {
+    display: none !important;
+  }
+
+  i{
+    display: none !important;
+  }
+
+   #btn {
+    align-items: center;
+  }
+
+  .bullet,
+  .blitz,
+  .normal,
+  .local {
+    font-size: 7vw;
+    width: 80vw;
+    height: 10vh;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+  }
+}
+
+  .historico {
+    display: none !important;
+  }
+
+  footer{
+    font-size: 15px;
+  }
+}
+
 

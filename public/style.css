@@ -287,6 +287,52 @@ i{
     z-index: 100;
 }
 
+@media (max-width: 768px) {
+  #tabuleiro {
+    grid-template-columns: repeat(8, 45px);
+    grid-template-rows: repeat(8, 45px);
+  }
+
+  .casas,
+  .casas-claras {
+    width: 45px;
+    height: 45px;
+  }
+
+  .peca-preta,
+  .peca-branca {
+    font-size: 32px;
+  }
+
+  .btn-go,
+  .btn-back,
+  .btn-goChange,
+  .tempo,
+  .tempo2 {
+    width: 110px;
+    height: 50px;
+    font-size: 20px;
+  }
+
+  .container2 {
+    gap: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .container,
+  .cima {
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .finalGame {
+    width: 90%;
+    font-size: 20px;
+    padding: 15px;
+  }
+}
 
 
 
