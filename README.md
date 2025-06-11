@@ -1,33 +1,37 @@
 ♟️ Chess Game Project
-Project developed for educational purposes, aimed at practicing and improving skills in HTML, CSS, and JavaScript. The main objective is to create a fully interactive and visual chess game that can be played directly in the browser.
+Still in development — made for learning and practice
 
-![Chess Game Screenshot](https://github.com/user-attachments/assets/e7358f84-23fd-43f3-b2fd-46ca080496cd)
+📌 About the Project
+This project was developed for educational purposes, with the main goal of practicing and improving skills in HTML, CSS, and JavaScript.
+The objective is to build a fully interactive and visual chess game that runs directly in the browser.
 
-🔨 Project functionality
-The core functionality of this project is to simulate a playable chessboard in the browser. The pieces can be moved by clicking and selecting valid squares according to the standard rules of chess.
+<div align="center"> <img src="https://github.com/user-attachments/assets/e7358f84-23fd-43f3-b2fd-46ca080496cd" alt="Chess Game Screenshot" width="80%"> </div>
+🔧 Core Functionalities
+✅ Fully visual chessboard with pieces styled via HTML and CSS
 
-Full visual board with pieces rendered via HTML and CSS
+✅ Click-based piece movement handled with JavaScript
 
-JavaScript handles click-based piece movement
+✅ Turn-based logic (white and black alternate turns)
 
-Basic turn-based logic implemented (white and black alternate turns)
+✅ Basic movement rule validation (legal moves only)
 
-Basic rule validation (e.g., legal piece movement)
+✅ AI implemented (currently user can only play as white)
 
-AI implemented (for now the user only can play as white)
+⚠️ Known Limitations / In Progress
+🚫 Login and user authentication not yet implemented (planned)
 
-⚠️ Note: The login and user authentication system is not yet implemented. It is planned as a future update to enable player profiles and match tracking.<br>
-⚠️ Note: The checkmate system may occasionally fail when playing against AI.
+⚠️ Checkmate detection may fail in some AI scenarios
 
-💻 Technologies used
-HTML: structure of the chessboard and pieces
+⚙️ Planned: Play as black, enhanced AI, and player customization
 
-CSS: board styling, layout, and responsiveness
+💻 Technologies Used
+HTML – structure and rendering of the board
 
-JavaScript: logic for movement, interaction, turn control and AI
+CSS – layout, styling, responsiveness
 
-(Planned) Firebase or similar: to handle future login and database features
-(Planned) More options to personalization and user play as black
+JavaScript – game logic, movement, turns, and AI
 
-📁 Project access
-You can view the hosted page by clicking [here](https://chess-tau-sepia.vercel.app/).
+(Planned) Firebase or similar – for login and database features
+
+🌐 Access the Project
+You can view the live version of the project [here](https://chess-tau-sepia.vercel.app/)
